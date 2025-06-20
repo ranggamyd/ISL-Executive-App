@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.swal2-title {
+    font-size: 1.25rem !important;
+}
