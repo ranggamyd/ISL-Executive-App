@@ -63,7 +63,14 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                         <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
                     </button> */}
 
-                    <img src={user?.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"} alt={user?.name} className="w-8 h-8 rounded-full border-2 border-gray-200" />
+                    <img
+                        src={import.meta.env.VITE_PUBLIC_URL + "directorApp/" + user?.avatar}
+                        alt="Avatar"
+                        className="w-8 h-8 rounded-full border-2 border-gray-200"
+                        onError={e => {
+                            e.currentTarget.outerHTML = `<div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full border-2 border-gray-200 flex items-center justify-center text-white font-medium text-xs">${user?.name.charAt(0)}</div>`;
+                        }}
+                    />
                 </div>
             </div>
         </header>

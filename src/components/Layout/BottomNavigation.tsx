@@ -20,7 +20,7 @@ const BottomNavigation: React.FC = () => {
         { id: "home", icon: Home, label: t("home"), path: "/dashboard" },
         { id: "recruitment", icon: ClipboardCheck, label: t("recruitment"), path: "/recruitment" },
         { id: "sales", icon: TrendingUp, label: t("sales"), path: "/sales" },
-        { id: "employees", icon: Users, label: t("employees"), path: "/employees" },
+        { id: "employee", icon: Users, label: t("employee"), path: "/employee" },
         { id: "profile", icon: User, label: t("profile"), path: "/profile" },
     ];
 

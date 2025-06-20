@@ -78,6 +78,7 @@ const Candidate = () => {
             Swal.fire({
                 title: t(`confirm_${action}Candidate`),
                 confirmButtonText: t(action),
+                cancelButtonText: t("cancel"),
                 confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
                 showCancelButton: true,
                 reverseButtons: true,
@@ -131,6 +132,7 @@ const Candidate = () => {
             )}
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 mb-6">
+                <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("candidateList")}</h2>
                 <div className="flex items-center space-x-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -189,6 +191,13 @@ const Candidate = () => {
                         </motion.div>
                     ))}
                 </InfiniteScroll>
+            )}
+
+            {candidates.length === 0 && !loading && (
+                <div className="text-center py-8 text-gray-500">
+                    <Search size={48} className="mx-auto mb-4 text-gray-300" />
+                    <p>{t("noDataFound")}</p>
+                </div>
             )}
         </div>
     );

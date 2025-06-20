@@ -182,6 +182,10 @@ const DailyQuote: React.FC = () => {
                       })}
             </div>
 
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 mb-6">
+                <h2 className="text-xl font-bold text-gray-800 text-center">{t("salesList")}</h2>
+            </motion.div>
+
             {loading ? (
                 <ListSkeleton items={3} />
             ) : (

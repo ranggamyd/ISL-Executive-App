@@ -59,6 +59,7 @@ export const Detail: React.FC = () => {
         Swal.fire({
             title: t(titleKey),
             confirmButtonText: t(action),
+            cancelButtonText: t('cancel'),
             confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
             showCancelButton: true,
             reverseButtons: true,
@@ -164,7 +165,7 @@ export const Detail: React.FC = () => {
                                 maximumFractionDigits: 0,
                             }).format(candidate.salary_user || 0)}
                         </p>
-                        <p className="text-blue-200 text-xs">{t("expectedSalary")}</p>
+                        <p className="text-blue-200 text-xs text-center">{t("expectedSalary")}</p>
                     </div>
                     <div className="text-center">
                         <p className="text-xl font-bold">{interviewScore}%</p>
@@ -389,22 +390,22 @@ export const Detail: React.FC = () => {
                         {candidate.review_recruitment.kesimpulan.toLowerCase() === "recommend" ? (
                             <div className="px-3 py-2 space-x-2 bg-green-200 rounded-full flex items-center justify-center">
                                 <ThumbsUp size={12} className="text-green-600" />
-                                <small className="font-medium text-xs text-gray-600 uppercase">{candidate.review_recruitment.kesimpulan}</small>
+                                <small className="font-medium text-xs text-gray-600 uppercase">{t("recommended")}</small>
                             </div>
                         ) : candidate.review_recruitment.kesimpulan === "hold" ? (
                             <div className="px-3 py-2 space-x-2 bg-blue-100 rounded-full flex items-center justify-center">
                                 <Clock size={12} className="text-blue-600" />
-                                <small className="font-medium text-xs text-gray-600 uppercase">{candidate.review_recruitment.kesimpulan}</small>
+                                <small className="font-medium text-xs text-gray-600 uppercase">{t("holded")}</small>
                             </div>
                         ) : candidate.review_recruitment.kesimpulan === "not_recommend" || candidate.review_recruitment.kesimpulan === "Not Recommend" ? (
                             <div className="px-3 py-2 space-x-2 bg-red-100 rounded-full flex items-center justify-center">
                                 <ThumbsDown size={12} className="text-red-600" />
-                                <small className="font-medium text-xs text-gray-600 uppercase">{candidate.review_recruitment.kesimpulan.replace("_", " ")}</small>
+                                <small className="font-medium text-xs text-gray-600 uppercase truncate">{t("notRecommended")}</small>
                             </div>
                         ) : (
                             <div className="px-3 py-2 space-x-2 bg-gray-100 rounded-full flex items-center justify-center">
                                 <Clock size={12} className="text-gray-600" />
-                                <small className="font-medium text-xs text-gray-600 uppercase">{candidate.review_recruitment.kesimpulan}</small>
+                                <small className="font-medium text-xs text-gray-600 uppercase">{t("other")}</small>
                             </div>
                         )}
                     </div>

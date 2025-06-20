@@ -1,18 +1,12 @@
 import L from "leaflet";
-import { useEffect, useRef, useState } from "react";
 import { useMap } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
-
-type Vehicle = {
-    id: number;
-    name: string;
-    category: string;
-    [key: string]: any;
-};
+import { useEffect, useRef, useState } from "react";
+import { Vehicle as VehicleType } from "@/types/gps";
 
 type RotatingMarkerProps = {
     position: LatLngExpression;
-    vehicle: Vehicle;
+    vehicle: VehicleType;
     rotationAngle: number;
     iconUrl: string | undefined;
     popupInfo: string;
@@ -40,7 +34,7 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
     const [lastPosition, setLastPosition] = useState<LatLngExpression>(position);
 
     useEffect(() => {
-        // Create custom icon with modern styling
+        // Create custom icon
         const icon = L.divIcon({
             html: `
                 <div class="vehicle-marker-container">

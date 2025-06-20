@@ -86,6 +86,7 @@ const Salary = () => {
             Swal.fire({
                 title: t(`confirm_${action}Salary`),
                 confirmButtonText: t(action),
+                cancelButtonText: t("cancel"),
                 confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
                 showCancelButton: true,
                 reverseButtons: true,
@@ -139,6 +140,7 @@ const Salary = () => {
             )}
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 mb-6">
+                <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("salaryList")}</h2>
                 <div className="flex items-center space-x-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -181,8 +183,12 @@ const Salary = () => {
                             </div>
 
                             <div className="flex flex-wrap gap-2 mb-4">
-                                <span className="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">Expected: {formatCurrency(candidate.salary_user)}</span>
-                                <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">Offered: {candidate.offering_salary?.gaji_pokok ? formatCurrency(candidate.offering_salary.gaji_pokok) : "-"}</span>
+                                <span className="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">
+                                    {t("candidate")}: {formatCurrency(candidate.salary_user)}
+                                </span>
+                                <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
+                                    {t("hrd")}: {candidate.offering_salary?.gaji_pokok ? formatCurrency(candidate.offering_salary.gaji_pokok) : "-"}
+                                </span>
                             </div>
 
                             <div className="flex space-x-3">
@@ -202,6 +208,13 @@ const Salary = () => {
                         </motion.div>
                     ))}
                 </InfiniteScroll>
+            )}
+
+            {salaries.length === 0 && !loading && (
+                <div className="text-center py-8 text-gray-500">
+                    <Search size={48} className="mx-auto mb-4 text-gray-300" />
+                    <p>{t("noDataFound")}</p>
+                </div>
             )}
         </div>
     );

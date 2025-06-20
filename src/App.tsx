@@ -12,6 +12,7 @@ import ProfilePage from "./pages/Profile/ProfilePage";
 import EmployeePage from "./pages/Employee/EmployeePage";
 import RecruitmentPage from "./pages/Recruitment/RecruitmentPage";
 import { Detail as CandidateDetailPage } from "./pages/Recruitment/Detail";
+import { Detail as EmployeeDetailPage } from "./pages/Employee/Employee/Detail";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
@@ -59,7 +60,8 @@ const App: React.FC = () => {
                             <Route path="/recruitment" element={<RecruitmentPage />} />
                             <Route path="/recruitment/candidateDetail" element={<CandidateDetailPage />} />
                             <Route path="/sales" element={<SalesPage />} />
-                            <Route path="/employees" element={<EmployeePage />} />
+                            <Route path="/employee" element={<EmployeePage />} />
+                            <Route path="/employee/employeeDetail" element={<EmployeeDetailPage />} />
                             <Route path="/profile" element={<ProfilePage />} />
                         </Route>
 
