@@ -10,6 +10,7 @@ interface AuthContextType {
     logout: () => void;
     resetPassword: (email: string) => Promise<boolean>;
     isAuthenticated: boolean;
+    refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,6 +65,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
+    const refresh = async () => {
+        const savedToken = localStorage.getItem("token");
+        if (!savedToken) return;
+
+        try {
+            const response = await API.get("profile/me");
+
+            const responseData = response.data;
+
+            setUser(responseData.user);
+            localStorage.setItem("user", JSON.stringify(responseData.user));
+        } catch (err: any) {
+            swal("error", err.response.data.message);
+        }
+    };
+
     const logout = async () => {
         setLoading(true);
 
@@ -93,5 +110,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return true;
     };
 
-    return <AuthContext.Provider value={{ user, loading, login, logout, resetPassword, isAuthenticated: !!user }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, loading, login, logout, resetPassword, isAuthenticated: !!user, refresh }}>{children}</AuthContext.Provider>;
 };

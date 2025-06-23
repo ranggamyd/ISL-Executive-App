@@ -56,13 +56,14 @@ export const ListSkeleton: React.FC<{ items?: number }> = ({ items = 5 }) => (
 );
 
 export const StatSkeleton: React.FC = () => (
-    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between mb-4">
-            <Skeleton width="w-8" height="h-8" className="bg-white/20" />
-            <Skeleton width="w-16" height="h-6" className="bg-white/20" />
+    <div className={`bg-gradient-to-br from-gray-300 to-gray-600 rounded-xl p-4 text-white`}>
+        <div className="flex flex-col items-center justify-between">
+            <Skeleton width="w-6" height="h-6" className="bg-white/20" />
+            <div className="text-center mt-2 md:text-end">
+                <Skeleton width="w-20" height="h-2" className="bg-white/20 mb-2" />
+                <Skeleton width="w-20" height="h-2" className="bg-white/20 mb-2" />
+            </div>
         </div>
-        <Skeleton width="w-20" height="h-8" className="bg-white/20 mb-2" />
-        <Skeleton width="w-24" height="h-4" className="bg-white/20" />
     </div>
 );
 

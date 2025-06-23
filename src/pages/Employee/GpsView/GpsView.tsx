@@ -9,7 +9,7 @@ import { getRelativeTime } from "@/utils/convertTime";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Position as PositionType, Vehicle as VehicleType } from "@/types/gps";
-import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Filter, ChevronDown } from "lucide-react";
+import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Filter, ChevronDown, Minimize2, Maximize2 } from "lucide-react";
 
 const icons = {
     car: {
@@ -38,6 +38,7 @@ const GpsView = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
     const mapRef = useRef<LeafletMap | null>(null);
+    const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
     const http = window.location.protocol === "https:" ? "https:" : "http:";
     const path = http === "https:" ? "apps.intilab.com" : "10.88.8.40:8082";
@@ -237,48 +238,64 @@ const GpsView = () => {
     return (
         <div className="space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-2 shadow-sm border border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
+                    <button onClick={() => setIsMapFullscreen(!isMapFullscreen)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors me-4">
+                        {isMapFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                    </button>
+                </div>
 
                 {/* Interactive Map */}
-                <div className="flex flex-col bg-gray-50 rounded-2xl">
-                    {/* Map Container */}
-                    <div className="relative h-[400px]">
-                        <div className="absolute inset-0 z-0">
-                            <MapContainer
-                                center={[-6.3175829, 106.6474905]}
-                                zoom={17}
-                                className="rounded-2xl"
-                                style={{ height: "100%", width: "100%" }}
-                                whenReady={() => {
-                                    const map = mapRef.current as LeafletMap;
-                                    if (map) {
-                                        setTimeout(() => {
-                                            map.invalidateSize();
-                                        }, 100);
-                                    }
-                                }}
-                            >
-                                <TileLayer url="https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}" maxZoom={20} subdomains={["mt0", "mt1", "mt2", "mt3"]} attribution="&copy; Google" />
-                                {vehicles.map(vehicle => {
-                                    const position = positions[vehicle.id];
-                                    if (position) {
-                                        const iconUrl = getVehicleIconUrl(vehicle, position);
-                                        const rotationAngle = position.course || 0;
-                                        const popupInfo = getPopupInfo(vehicle, position);
-                                        return <RotatingMarker key={vehicle.id} vehicle={vehicle} position={[position.latitude, position.longitude]} rotationAngle={rotationAngle} iconUrl={iconUrl} popupInfo={popupInfo} onClick={() => handleVehicleClick(vehicle.id)} isOpen={openPopupVehicleId === vehicle.id} />;
-                                    }
-                                    return null;
-                                })}
-                            </MapContainer>
+                <div className={`transition-all duration-300 ${isMapFullscreen ? "fixed inset-0 z-[51] bg-white p-6" : ""}`}>
+                    {isMapFullscreen && (
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
+                            <button onClick={() => setIsMapFullscreen(false)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors me-4">
+                                <Minimize2 size={18} />
+                            </button>
                         </div>
+                    )}
 
-                        {/* Connection Status */}
-                        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="absolute top-4 right-4">
-                            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm ${isConnected ? "bg-green-500/20 border border-green-500/30" : "bg-red-500/20 border border-red-500/30"}`}>
-                                {isConnected ? <Wifi className="w-4 h-4 text-green-600" /> : <WifiOff className="w-4 h-4 text-red-600" />}
-                                <span className={`text-sm font-medium ${isConnected ? "text-green-700" : "text-red-700"}`}>{isConnected ? t("connected") : t("disconnected")}</span>
+                    <div className="flex flex-col bg-gray-50 rounded-2xl">
+                        {/* Map Container */}
+                        <div className={`relative ${isMapFullscreen ? "h-[90dvh]" : "h-[400px]"}`}>
+                            <div className="absolute inset-0 z-0">
+                                <MapContainer
+                                    center={[-6.3175829, 106.6474905]}
+                                    zoom={17}
+                                    className="rounded-2xl"
+                                    style={{ height: "100%", width: "100%" }}
+                                    whenReady={() => {
+                                        const map = mapRef.current as LeafletMap;
+                                        if (map) {
+                                            setTimeout(() => {
+                                                map.invalidateSize();
+                                            }, 100);
+                                        }
+                                    }}
+                                >
+                                    <TileLayer url="https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}" maxZoom={20} subdomains={["mt0", "mt1", "mt2", "mt3"]} attribution="&copy; Google" />
+                                    {vehicles.map(vehicle => {
+                                        const position = positions[vehicle.id];
+                                        if (position) {
+                                            const iconUrl = getVehicleIconUrl(vehicle, position);
+                                            const rotationAngle = position.course || 0;
+                                            const popupInfo = getPopupInfo(vehicle, position);
+                                            return <RotatingMarker key={vehicle.id} vehicle={vehicle} position={[position.latitude, position.longitude]} rotationAngle={rotationAngle} iconUrl={iconUrl} popupInfo={popupInfo} onClick={() => handleVehicleClick(vehicle.id)} isOpen={openPopupVehicleId === vehicle.id} />;
+                                        }
+                                        return null;
+                                    })}
+                                </MapContainer>
                             </div>
-                        </motion.div>
+
+                            {/* Connection Status */}
+                            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="absolute top-4 right-4">
+                                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm ${isConnected ? "bg-green-500/20 border border-green-500/30" : "bg-red-500/20 border border-red-500/30"}`}>
+                                    {isConnected ? <Wifi className="w-4 h-4 text-green-600" /> : <WifiOff className="w-4 h-4 text-red-600" />}
+                                    <span className={`text-sm font-medium ${isConnected ? "text-green-700" : "text-red-700"}`}>{isConnected ? t("connected") : t("disconnected")}</span>
+                                </div>
+                            </motion.div>
+                        </div>
                     </div>
                 </div>
             </motion.div>

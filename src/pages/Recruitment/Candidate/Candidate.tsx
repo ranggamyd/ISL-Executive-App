@@ -116,7 +116,7 @@ const Candidate = () => {
     return (
         <div className="space-y-4">
             {lightboxOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closeLightbox}>
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center" style={{ zIndex: 51 }} onClick={closeLightbox}>
                     <div className="relative max-w-4xl max-h-[90vh] p-4">
                         <button onClick={closeLightbox} className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold">
                             <X size={32} />

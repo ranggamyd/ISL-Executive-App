@@ -152,9 +152,15 @@ export const Detail: React.FC = () => {
                             <p className="text-indigo-200 text-xs">
                                 {employee.shio} & {employee.elemen}
                             </p>
-                            <div className="mt-2">
+                            <div className="mt-2 sm:hidden">
                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(employee.status_karyawan)}`}>{employee.status_karyawan}</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="hidden sm:block">
+                        <div className={`px-4 py-2 ${getStatusColor(employee.status_karyawan)} backdrop-blur rounded-full transition-colors flex items-center justify-center space-x-2`}>
+                            <span className={`font-medium text-sm uppercase`}>{employee.status_karyawan}</span>
                         </div>
                     </div>
                 </div>

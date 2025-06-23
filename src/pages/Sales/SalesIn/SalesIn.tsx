@@ -143,7 +143,7 @@ const SalesIns: React.FC = () => {
                                             <span className="text-gray-800">{item.status}</span>
                                         </div>
                                     )}
-                                    <span className="text-xs truncate">{item.keterangan}</span>
+                                    <span className="text-xs sm:text-sm truncate">{item.keterangan}</span>
                                 </div>
                                 <div className="flex flex-col items-end justify-between">
                                     <span className="text-lg font-bold text-gray-900">{formatCurrency(item.nominal)}</span>

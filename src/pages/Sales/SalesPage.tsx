@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import SalesIn from "./SalesIn/SalesIn";
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import DailyQuote from "./DailyQuote/DailyQuote";
 import PointOfSales from "./PointOfSales/PointOfSales";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,7 +11,9 @@ import { TrendingUp, ShoppingCart, BarChart3, FileBarChart2 } from "lucide-react
 const SalesPage: React.FC = () => {
     const { t } = useLanguage();
 
-    const [activeTab, setActiveTab] = useState<"dailyQuotes" | "pointOfSales" | "salesIn" | "salesInReports">("dailyQuotes");
+    const location = useLocation();
+
+    const [activeTab, setActiveTab] = useState<"dailyQuotes" | "pointOfSales" | "salesIn" | "salesInReports">(location.state?.activeTab || "dailyQuotes");
 
     const tabs = [
         {
@@ -45,7 +48,7 @@ const SalesPage: React.FC = () => {
                         return (
                             <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${activeTab === tab.id ? "bg-blue-500 text-white shadow-md" : "text-gray-600 hover:bg-gray-50"}`}>
                                 <Icon size={18} />
-                                <span className="hidden sm:inline">{tab.label}</span>
+                                <span className="hidden sm:inline sm:text-sm sm:truncate">{tab.label}</span>
                             </button>
                         );
                     })}

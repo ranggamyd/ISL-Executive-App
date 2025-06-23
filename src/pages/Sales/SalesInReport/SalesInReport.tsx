@@ -142,9 +142,9 @@ const SalesInReport: React.FC = () => {
                               <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className={`bg-gradient-to-br ${stat.color} rounded-xl p-4 text-white`}>
                                   <div className="flex flex-col items-center justify-between">
                                       <Icon size={20} className="text-white" />
-                                      <div className="text-center mt-2 md:text-end">
-                                          <p className="text-xs md:text-md opacity-90 whitespace-nowrap">{stat.title}</p>
-                                          <p className="text-xs md:text-xl font-bold">{stat.type === "currency" ? <AnimatedCurrency value={stat.value} duration={200 + index * 200} /> : <AnimatedNumber value={stat.value} duration={1500 + index * 200} />}</p>
+                                      <div className="text-center mt-2">
+                                          <p className="text-xs sm:text-sm opacity-90 whitespace-nowrap">{stat.title}</p>
+                                          <p className="text-xs sm:text-lg font-bold">{stat.type === "currency" ? <AnimatedCurrency value={stat.value} duration={200 + index * 200} /> : <AnimatedNumber value={stat.value} duration={1500 + index * 200} />}</p>
                                       </div>
                                   </div>
                               </motion.div>

@@ -134,7 +134,14 @@ const Employee = () => {
                 <InfiniteScroll className="space-y-4 mb-3" style={{ overflow: "hidden !important" }} dataLength={employees.length} next={() => setPage(page + 1)} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                     {employees.map((employee, index) => (
                         <motion.div key={employee.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="flex items-start justify-between mb-4">
+                            <div
+                                onClick={() =>
+                                    navigate(`/employee/employeeDetail`, {
+                                        state: { employee },
+                                    })
+                                }
+                                className="flex items-start justify-between mb-4"
+                            >
                                 <div className="flex items-center space-x-4">
                                     <img
                                         src={import.meta.env.VITE_PUBLIC_URL + "Foto_Karyawan/" + employee.image}
@@ -146,16 +153,7 @@ const Employee = () => {
                                         }}
                                     />
                                     <div>
-                                        <h3
-                                            onClick={() =>
-                                                navigate(`/employee/employeeDetail`, {
-                                                    state: { employee },
-                                                })
-                                            }
-                                            className="font-semibold text-gray-900"
-                                        >
-                                            {employee.nama_lengkap}
-                                        </h3>
+                                        <h3 className="font-semibold text-gray-900">{employee.nama_lengkap}</h3>
                                         <p className="text-sm text-gray-600">{employee.jabatan.nama_jabatan}</p>
                                         <p className="text-xs text-gray-500">{employee.department}</p>
                                     </div>
@@ -163,18 +161,20 @@ const Employee = () => {
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(employee.status_karyawan)}`}>{t(employee.status_karyawan)}</span>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                                <div className="flex items-center space-x-2">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm px-2">
+                                <div className="flex items-center justify-start space-x-2">
                                     <Mail size={13} className="text-gray-400" />
                                     <small className="text-xs text-gray-600">{employee.email}</small>
                                 </div>
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center justify-center space-x-2">
                                     <Phone size={13} className="text-gray-400" />
                                     <small className="text-xs text-gray-600">{employee.no_telpon}</small>
                                 </div>
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center justify-end space-x-2">
                                     <Calendar size={13} className="text-gray-400" />
-                                    <small className="text-xs text-gray-600">{t('joined')}: {new Date(employee.tgl_mulai_kerja).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}</small>
+                                    <small className="text-xs text-gray-600">
+                                        {t("joined")}: {new Date(employee.tgl_mulai_kerja).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
+                                    </small>
                                 </div>
                             </div>
                         </motion.div>

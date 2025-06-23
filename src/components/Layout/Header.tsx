@@ -64,9 +64,9 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                     </button> */}
 
                     <img
-                        src={import.meta.env.VITE_PUBLIC_URL + "directorApp/" + user?.avatar}
+                        src={import.meta.env.VITE_PUBLIC_URL + "directorApp/avatars/" + user?.avatar}
                         alt="Avatar"
-                        className="w-8 h-8 rounded-full border-2 border-gray-200"
+                        className="w-8 h-8 object-cover rounded-full border-2 border-gray-200"
                         onError={e => {
                             e.currentTarget.outerHTML = `<div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full border-2 border-gray-200 flex items-center justify-center text-white font-medium text-xs">${user?.name.charAt(0)}</div>`;
                         }}

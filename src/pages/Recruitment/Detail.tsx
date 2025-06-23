@@ -59,7 +59,7 @@ export const Detail: React.FC = () => {
         Swal.fire({
             title: t(titleKey),
             confirmButtonText: t(action),
-            cancelButtonText: t('cancel'),
+            cancelButtonText: t("cancel"),
             confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
             showCancelButton: true,
             reverseButtons: true,
@@ -147,6 +147,13 @@ export const Detail: React.FC = () => {
                             <p className="text-blue-200 text-xs">
                                 {candidate.shio} & {candidate.elemen}
                             </p>
+                        </div>
+                    </div>
+
+                    <div className="hidden sm:block">
+                        <div className="p-2 bg-gray-100/50 backdrop-blur rounded-full transition-colors flex items-center justify-center space-x-2">
+                            <Clock size={18} className="text-gray-800" />
+                            <span className="font-medium text-xs text-gray-800">{candidate.status}</span>
                         </div>
                     </div>
                 </div>
