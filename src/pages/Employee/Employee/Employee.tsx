@@ -1,14 +1,14 @@
 import API from "@/lib/api";
 import swal from "@/utils/swal";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import useDebounce from "@/hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Employee as EmployeeType } from "@/types/employee";
 import { ListSkeleton } from "@/components/Common/Skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Calendar, ChevronDown, Filter, Mail, Phone, Search, X } from "lucide-react";
+import { ChevronDown, Filter, Mail, Phone, Search, X } from "lucide-react";
 
 const Employee = () => {
     const { t } = useLanguage();
@@ -16,6 +16,14 @@ const Employee = () => {
     const [loading, setLoading] = useState(true);
     const [employees, setEmployees] = useState<EmployeeType[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const filterRef = useRef<HTMLDivElement | null>(null);
+    const [filterOpen, setFilterOpen] = useState<boolean>(false);
+    const [uniqueStatuses, setUniqueStatuses] = useState<string[]>([]);
+    const [selectedStatus, setSelectedStatus] = useState<string>("");
+    const [uniquePositions, setUniquePositions] = useState<{ id: string; nama_jabatan: string }[]>([]);
+    const [selectedPosition, setSelectedPosition] = useState<string>("");
+    const [uniqueDepartments, setUniqueDepartments] = useState<{ id: string; nama_divisi: string }[]>([]);
+    const [selectedDepartment, setSelectedDepartment] = useState<string>("");
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
 
@@ -31,20 +39,24 @@ const Employee = () => {
         if (page === 1) setLoading(true);
 
         try {
-            const { data } = await API.get("employees", {
+            const { data } = await API.get("employees/employees", {
                 params: {
                     page,
                     searchTerm,
+                    status: selectedStatus,
+                    position: selectedPosition,
+                    department: selectedDepartment,
                 },
             });
 
-            const employeesList = data.employees.data;
+            const employeesList = data.data.data;
 
             if (employeesList.length === 0) {
+                if (page === 1) setEmployees([]);
                 setHasMore(false);
-                if (searchTerm) setEmployees([]);
             } else {
                 setEmployees(prev => (append ? [...prev, ...employeesList] : employeesList));
+                setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
             swal("error", err.response.data.message);
@@ -54,8 +66,55 @@ const Employee = () => {
     };
 
     useEffect(() => {
-        fetchEmployees(page, page !== 1, debouncedSearch);
-    }, [page, debouncedSearch]);
+        setPage(1);
+        setHasMore(true);
+        fetchEmployees(1, false, debouncedSearch);
+    }, [debouncedSearch, selectedPosition, selectedStatus, selectedDepartment]);
+
+    const loadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchEmployees(nextPage, true, debouncedSearch);
+    };
+
+    useEffect(() => {
+        (async () => {
+            setLoading(true);
+
+            try {
+                const { data } = await API.get("employees/employeeFilter");
+
+                const employeeFilter = data.data;
+
+                setUniqueStatuses(employeeFilter.statuses);
+                setUniquePositions(employeeFilter.positions);
+                setUniqueDepartments(employeeFilter.departments);
+            } catch (err: any) {
+                swal("error", err.response.data.message);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+                setFilterOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const clearFilters = (): void => {
+        setSelectedStatus("");
+        setSelectedPosition("");
+        setSelectedDepartment("");
+    };
 
     const getStatusColor = (status_karyawan: EmployeeType["status_karyawan"]) => {
         let className = "";
@@ -119,11 +178,56 @@ const Employee = () => {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <div className="relative">
-                        <button className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                    <div className="relative" ref={filterRef}>
+                        <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
                             <Filter size={18} className="text-gray-600" />
-                            <ChevronDown size={16} className={`text-gray-600`} />
+                            <ChevronDown size={16} className={`text-gray-600 transition-transform ${filterOpen ? "rotate-180" : ""}`} />
                         </button>
+
+                        {filterOpen && (
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <div className="p-4 space-y-4">
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">{t("employeeStatus")}</label>
+                                        <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">{t("allStatuses")}</option>
+                                            {uniqueStatuses.map(status => (
+                                                <option key={status} value={status}>
+                                                    {status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">{t("department")}</label>
+                                        <select value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">{t("allDepartments")}</option>
+                                            {uniqueDepartments.map(department => (
+                                                <option key={department.id} value={department.id}>
+                                                    {department.nama_divisi}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">{t("position")}</label>
+                                        <select value={selectedPosition} onChange={e => setSelectedPosition(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">{t("allPositions")}</option>
+                                            {uniquePositions.map(position => (
+                                                <option key={position.id} value={position.id}>
+                                                    {position.nama_jabatan}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-800 hover:underline me-1">
+                                            {t("clearAll")}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </motion.div>
@@ -131,7 +235,7 @@ const Employee = () => {
             {loading ? (
                 <ListSkeleton items={searchTerm ? 1 : 3} />
             ) : (
-                <InfiniteScroll className="space-y-4 mb-3" style={{ overflow: "hidden !important" }} dataLength={employees.length} next={() => setPage(page + 1)} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
+                <InfiniteScroll className="space-y-4 mb-3" style={{ overflow: "hidden !important" }} dataLength={employees.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                     {employees.map((employee, index) => (
                         <motion.div key={employee.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 overflow-hidden">
                             <div
@@ -145,7 +249,7 @@ const Employee = () => {
                                 <div className="flex items-center space-x-4">
                                     <img
                                         src={import.meta.env.VITE_PUBLIC_URL + "Foto_Karyawan/" + employee.image}
-                                        alt="Candidate Avatar"
+                                        alt="Employee Avatar"
                                         className="w-12 h-12 rounded-full object-cover cursor-pointer hover:opacity-75 transition-opacity"
                                         onClick={() => openLightbox(import.meta.env.VITE_PUBLIC_URL + "Foto_Karyawan/" + employee.image, employee.nama_lengkap)}
                                         onError={e => {
@@ -161,21 +265,21 @@ const Employee = () => {
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(employee.status_karyawan)}`}>{t(employee.status_karyawan)}</span>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm px-2">
-                                <div className="flex items-center justify-start space-x-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm px-2">
+                                <div className="flex items-center sm:justify-start space-x-2">
                                     <Mail size={13} className="text-gray-400" />
                                     <small className="text-xs text-gray-600">{employee.email}</small>
                                 </div>
-                                <div className="flex items-center justify-center space-x-2">
+                                <div className="flex items-center sm:justify-center space-x-2">
                                     <Phone size={13} className="text-gray-400" />
                                     <small className="text-xs text-gray-600">{employee.no_telpon}</small>
                                 </div>
-                                <div className="flex items-center justify-end space-x-2">
+                                {/* <div className="flex items-center sm:justify-end space-x-2">
                                     <Calendar size={13} className="text-gray-400" />
                                     <small className="text-xs text-gray-600">
                                         {t("joined")}: {new Date(employee.tgl_mulai_kerja).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
                                     </small>
-                                </div>
+                                </div> */}
                             </div>
                         </motion.div>
                     ))}

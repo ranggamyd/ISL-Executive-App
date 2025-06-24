@@ -34,7 +34,7 @@ const App: React.FC = () => {
     return (
         <LanguageProvider>
             <AuthProvider>
-                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <Router basename="/exec" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <Routes>
                         {/* Public Routes */}
                         <Route

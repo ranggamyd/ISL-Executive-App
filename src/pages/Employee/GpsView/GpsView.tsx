@@ -35,6 +35,11 @@ const GpsView = () => {
     const [openPopupVehicleId, setOpenPopupVehicleId] = useState<number | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [isConnected, setIsConnected] = useState(false);
+
+    // New states for filter dropdown
+    const filterRef = useRef<HTMLDivElement | null>(null);
+    const [filterOpen, setFilterOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<string>("all");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
     const mapRef = useRef<LeafletMap | null>(null);
@@ -43,6 +48,20 @@ const GpsView = () => {
     const http = window.location.protocol === "https:" ? "https:" : "http:";
     const path = http === "https:" ? "apps.intilab.com" : "10.88.8.40:8082";
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+                setFilterOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const connectWebSocket = () => {
         const url = `${protocol}//${path}/api/socket`;
@@ -177,10 +196,16 @@ const GpsView = () => {
         }
     };
 
+    // Updated filter function to include status filter
     const getFilteredVehicles = vehicles.filter(vehicle => {
+        const position = positions[vehicle.id];
+        const status = position ? getVehicleStatus(vehicle, position) : "Offline";
+
         const matchesSearch = vehicle.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory === "all" || vehicle.category === selectedCategory;
-        return matchesSearch && matchesCategory;
+        const matchesStatus = selectedStatus === "all" || status === selectedStatus;
+
+        return matchesSearch && matchesCategory && matchesStatus;
     });
 
     const getVehicleIconUrl = (vehicle: VehicleType, position: PositionType) => {
@@ -234,6 +259,13 @@ const GpsView = () => {
     };
 
     const categories = [...new Set(vehicles.map(v => v.category))];
+    const statuses = ["Moving", "Idling", "Parking", "Offline"];
+
+    const clearAllFilters = () => {
+        setSelectedCategory("all");
+        setSelectedStatus("all");
+        setSearchTerm("");
+    };
 
     return (
         <div className="space-y-6">
@@ -246,7 +278,7 @@ const GpsView = () => {
                 </div>
 
                 {/* Interactive Map */}
-                <div className={`transition-all duration-300 ${isMapFullscreen ? "fixed inset-0 z-[51] bg-white p-6" : ""}`}>
+                <div className={`transition-all duration-300 ${isMapFullscreen ? "fixed inset-0 z-[51] bg-white p-3" : ""}`}>
                     {isMapFullscreen && (
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
@@ -259,7 +291,7 @@ const GpsView = () => {
                     <div className="flex flex-col bg-gray-50 rounded-2xl">
                         {/* Map Container */}
                         <div className={`relative ${isMapFullscreen ? "h-[90dvh]" : "h-[400px]"}`}>
-                            <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 z-0 p-0">
                                 <MapContainer
                                     center={[-6.3175829, 106.6474905]}
                                     zoom={17}
@@ -301,30 +333,56 @@ const GpsView = () => {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6 space-y-3">
-                <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("vehicleList")}</h2>
+                <div className="flex items-center justify-center">
+                    <h2 className="text-xl font-bold text-gray-800">{t("vehicleList")}</h2>
+                </div>
+
                 <div className="flex items-center space-x-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <div className="relative">
-                        <button className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                    <div className="relative" ref={filterRef}>
+                        <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
                             <Filter size={18} className="text-gray-600" />
                             <ChevronDown size={16} className={`text-gray-600`} />
                         </button>
-                    </div>
-                </div>
 
-                {/* Category Filter */}
-                <div className="flex gap-2">
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedCategory("all")} className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === "all" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-                        {t("all")}
-                    </motion.button>
-                    {categories.map(category => (
-                        <motion.button key={category} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedCategory(category)} className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap capitalize transition-colors ${selectedCategory === category ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-                            {t(category.toLowerCase())}
-                        </motion.button>
-                    ))}
+                        {/* Dropdown Menu */}
+                        {filterOpen && (
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <div className="p-4 space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t("category")}</label>
+                                        <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="all">{t("all")}</option>
+                                            {categories.map(category => (
+                                                <option key={category} value={category}>
+                                                    {t(category.toLowerCase())}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="all">{t("all")}</option>
+                                            {statuses.map(status => (
+                                                <option key={status} value={status}>
+                                                    {t(status.toLowerCase())}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button onClick={clearAllFilters} className="text-sm text-blue-600 hover:text-blue-800 hover:underline me-1">
+                                            {t("clearAll")}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
                 </div>
             </motion.div>
 

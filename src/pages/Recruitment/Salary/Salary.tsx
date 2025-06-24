@@ -2,9 +2,9 @@ import API from "@/lib/api";
 import Swal from "sweetalert2";
 import swal from "@/utils/swal";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import useDebounce from "@/hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ListSkeleton } from "@/components/Common/Skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -17,6 +17,10 @@ const Salary = () => {
     const [loading, setLoading] = useState(false);
     const [salaries, setSalaries] = useState<CandidateType[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const filterRef = useRef<HTMLDivElement>(null);
+    const [filterOpen, setFilterOpen] = useState<boolean>(false);
+    const [uniquePositions, setUniquePositions] = useState<{ id: string; nama_jabatan: string }[]>([]);
+    const [selectedPosition, setSelectedPosition] = useState<string>("");
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
 
@@ -33,7 +37,7 @@ const Salary = () => {
 
         try {
             const { data } = await API.get("recruitment/salaries", {
-                params: { page, searchTerm },
+                params: { page, searchTerm, position: selectedPosition },
             });
 
             const candidatesList = data.data.data;
@@ -56,12 +60,47 @@ const Salary = () => {
         setPage(1);
         setHasMore(true);
         fetchSalaries(1, false, debouncedSearch);
-    }, [debouncedSearch]);
+    }, [debouncedSearch, selectedPosition]);
 
     const loadMore = () => {
         const nextPage = page + 1;
         setPage(nextPage);
         fetchSalaries(nextPage, true, debouncedSearch);
+    };
+
+    useEffect(() => {
+        (async () => {
+            setLoading(true);
+
+            try {
+                const { data } = await API.get("recruitment/candidateFilter");
+
+                const candidateFilter = data.data;
+
+                setUniquePositions(candidateFilter.positions);
+            } catch (err: any) {
+                swal("error", err.response.data.message);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+                setFilterOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const clearFilters = (): void => {
+        setSelectedPosition("");
     };
 
     const formatCurrency = (amount: number) => {
@@ -152,11 +191,34 @@ const Salary = () => {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
-                    <div className="relative">
-                        <button className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                    <div className="relative" ref={filterRef}>
+                        <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
                             <Filter size={18} className="text-gray-600" />
-                            <ChevronDown size={16} className={`text-gray-600`} />
+                            <ChevronDown size={16} className={`text-gray-600 transition-transform ${filterOpen ? "rotate-180" : ""}`} />
                         </button>
+
+                        {filterOpen && (
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <div className="p-4 space-y-4">
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700">{t("position")}</label>
+                                        <select value={selectedPosition} onChange={e => setSelectedPosition(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">{t("allPositions")}</option>
+                                            {uniquePositions.map(position => (
+                                                <option key={position.id} value={position.id}>
+                                                    {position.nama_jabatan}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-800 hover:underline me-1">
+                                            {t("clearAll")}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </motion.div>
@@ -197,10 +259,10 @@ const Salary = () => {
                                 </span>
                             </div>
 
-                            <div className="flex space-x-3">
-                                <button onClick={() => handleSalaryAction(candidate, "view")} className="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                            <div className="flex justify-between space-x-3">
+                                <button onClick={() => handleSalaryAction(candidate, "view")} className="border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                                     <Eye size={18} />
-                                    <span className="text-xs">{t("resume")}</span>
+                                    <span className="text-xs hidden sm:block">{t("resume")}</span>
                                 </button>
                                 <button onClick={() => handleSalaryAction(candidate, "reject")} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                                     <XCircle size={18} />

@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Salary from "../Recruitment/Salary/Salary";
-import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Candidate from "../Recruitment/Candidate/Candidate";
+import React, { useState, useEffect, useRef } from "react";
 import { DailyQuote as DailyQuoteType } from "@/types/dailyQuote";
 import { CardSkeleton, StatSkeleton } from "@/components/Common/Skeleton";
 import { AnimatedNumber, AnimatedCurrency } from "@/components/Common/AnimatedCounter";
@@ -22,6 +22,7 @@ const HomePage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [dailyQuotes, setDailyQuotes] = useState<DailyQuoteType[]>([]);
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
+    const filterRef = useRef<HTMLDivElement | null>(null);
     const [filterOpen, setFilterOpen] = useState<boolean>(false);
     const [selectedSales, setSelectedSales] = useState<string>("");
     const [selectedSupervisor, setSelectedSupervisor] = useState<string>("");
@@ -68,6 +69,19 @@ const HomePage: React.FC = () => {
     const filteredQuotes = dailyQuotes.filter(item => {
         return (!selectedSales || item.sales_name === selectedSales) && (!selectedSupervisor || item.supervisor.nama_lengkap === selectedSupervisor) && (!selectedManager || item.manager.nama_lengkap === selectedManager);
     });
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+                setFilterOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const clearFilters = (): void => {
         setSelectedSales("");
@@ -181,15 +195,15 @@ const HomePage: React.FC = () => {
 
                 <div className="flex items-center justify-center space-x-3">
                     <input type="date" value={date} onChange={e => setDate(e.target.value)} className="px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <div className="relative">
+                    <div className="relative" ref={filterRef}>
                         <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
                             <Filter size={18} className="text-gray-600" />
                             <ChevronDown size={16} className={`text-gray-600 transition-transform ${filterOpen ? "rotate-180" : ""}`} />
                         </button>
 
                         {filterOpen && (
-                            <div className="absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-64 z-10">
-                                <div className="space-y-3">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <div className="p-4 space-y-4">
                                     <div className="space-y-1">
                                         <label className="block text-sm font-medium text-gray-700">{t("sales")}</label>
                                         <select value={selectedSales} onChange={e => setSelectedSales(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -229,7 +243,7 @@ const HomePage: React.FC = () => {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                 </div>
