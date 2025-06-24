@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                     <div className="relative">
                         <button onClick={() => setShowLangMenu(!showLangMenu)} className="p-2 hover:bg-gray-100 rounded-lg flex items-center space-x-1">
                             <Globe size={18} className="text-gray-700" />
-                            <span className="text-sm font-medium text-gray-700">{languages.find(l => l.code === language)?.flag}</span>
+                            <span className="text-sm font-medium text-gray-700 -mt-[3px]">{languages.find(l => l.code === language)?.flag}</span>
                         </button>
 
                         {showLangMenu && (

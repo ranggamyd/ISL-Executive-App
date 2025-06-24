@@ -22,7 +22,7 @@ export const Detail: React.FC = () => {
     const interviewScore = (() => {
         const hrdReview = candidate.review_recruitment;
 
-        const hrdScores = [hrdReview.kepercayaan_diri, hrdReview.pengetahuan_perusahaan, hrdReview.kemampuan_komunikasi, hrdReview.pengetahuan_jobs, hrdReview.antusias_perusahaan, hrdReview.motivasi_kerja];
+        const hrdScores = [hrdReview?.kepercayaan_diri || 0, hrdReview?.pengetahuan_perusahaan || 0, hrdReview?.kemampuan_komunikasi || 0, hrdReview?.pengetahuan_jobs || 0, hrdReview?.antusias_perusahaan || 0, hrdReview?.motivasi_kerja || 0];
         const userScore = candidate.review_user?.user_competensi || 0;
 
         const totalHrd = hrdScores.reduce((acc, item) => acc + parseInt(item.toString()), 0);
@@ -394,17 +394,17 @@ export const Detail: React.FC = () => {
                         <p className="text-sm text-gray-600">{t("abilityScores")}</p>
                     </div>
                     <div className="flex items-center">
-                        {candidate.review_recruitment.kesimpulan.toLowerCase() === "recommend" ? (
+                        {candidate.review_recruitment?.kesimpulan.toLowerCase() === "recommend" ? (
                             <div className="px-3 py-2 space-x-2 bg-green-200 rounded-full flex items-center justify-center">
                                 <ThumbsUp size={12} className="text-green-600" />
                                 <small className="font-medium text-xs text-gray-600 uppercase">{t("recommended")}</small>
                             </div>
-                        ) : candidate.review_recruitment.kesimpulan === "hold" ? (
+                        ) : candidate.review_recruitment?.kesimpulan === "hold" ? (
                             <div className="px-3 py-2 space-x-2 bg-blue-100 rounded-full flex items-center justify-center">
                                 <Clock size={12} className="text-blue-600" />
                                 <small className="font-medium text-xs text-gray-600 uppercase">{t("holded")}</small>
                             </div>
-                        ) : candidate.review_recruitment.kesimpulan === "not_recommend" || candidate.review_recruitment.kesimpulan === "Not Recommend" ? (
+                        ) : candidate.review_recruitment?.kesimpulan === "not_recommend" || candidate.review_recruitment?.kesimpulan === "Not Recommend" ? (
                             <div className="px-3 py-2 space-x-2 bg-red-100 rounded-full flex items-center justify-center">
                                 <ThumbsDown size={12} className="text-red-600" />
                                 <small className="font-medium text-xs text-gray-600 uppercase truncate">{t("notRecommended")}</small>
@@ -421,9 +421,9 @@ export const Detail: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <div className="space-y-4">
                         {[
-                            { label: "Kepercayaan Diri", value: candidate.review_recruitment.kepercayaan_diri || 3 },
-                            { label: "Kemampuan Komunikasi", value: candidate.review_recruitment.kemampuan_komunikasi || 3 },
-                            { label: "Antusias Perusahaan", value: candidate.review_recruitment.antusias_perusahaan || 3 },
+                            { label: "Kepercayaan Diri", value: candidate.review_recruitment?.kepercayaan_diri },
+                            { label: "Kemampuan Komunikasi", value: candidate.review_recruitment?.kemampuan_komunikasi },
+                            { label: "Antusias Perusahaan", value: candidate.review_recruitment?.antusias_perusahaan },
                         ].map((skill, index) => (
                             <div key={index}>
                                 <div className="flex justify-between items-center mb-2">
@@ -439,9 +439,9 @@ export const Detail: React.FC = () => {
 
                     <div className="space-y-4">
                         {[
-                            { label: "Pengetahuan Perusahaan", value: candidate.review_recruitment.pengetahuan_perusahaan || 3 },
-                            { label: "Pengetahuan Jobs", value: candidate.review_recruitment.pengetahuan_jobs || 3 },
-                            { label: "Motivasi Kerja", value: candidate.review_recruitment.motivasi_kerja || 3 },
+                            { label: "Pengetahuan Perusahaan", value: candidate.review_recruitment?.pengetahuan_perusahaan },
+                            { label: "Pengetahuan Jobs", value: candidate.review_recruitment?.pengetahuan_jobs },
+                            { label: "Motivasi Kerja", value: candidate.review_recruitment?.motivasi_kerja },
                         ].map((skill, index) => (
                             <div key={index}>
                                 <div className="flex justify-between items-center mb-2">
@@ -465,7 +465,7 @@ export const Detail: React.FC = () => {
                         <p className="text-sm text-gray-600">{t("interviewNotes")}</p>
                     </div>
 
-                    <textarea value={candidate.review_recruitment.catatan} className="mt-2 w-full h-52 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm text-gray-600" readOnly />
+                    <textarea value={candidate.review_recruitment?.catatan} className="mt-2 w-full h-52 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm text-gray-600" readOnly />
 
                     <p className="text-xs text-gray-500 mt-2 italic">
                         {t("approvedBy")} <strong>{candidate.approve_interview_hrd_by && parseInt(candidate.approve_interview_hrd_by) > 0 ? candidate.approve_hrd.nama_lengkap : candidate.approve_interview_hrd_by}</strong> {t("at")}:{" "}

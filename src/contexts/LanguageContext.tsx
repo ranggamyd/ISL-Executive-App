@@ -222,6 +222,8 @@ const translations = {
         greeting_evening: "Selamat sore",
         greeting_night: "Selamat malam",
         welcomeMessage: "Berikut overview perusahaan untuk hari ini",
+        allStatuses: "Semua Status",
+        fullName: "Nama Lengkap",
     },
 
     en: {
@@ -426,6 +428,8 @@ const translations = {
         greeting_evening: "Good Evening",
         greeting_night: "Good Night",
         welcomeMessage: "Here's your company overview for today",
+        allStatuses: "All Statuses",
+        fullName: "Full Name",
     },
 
     zh: {
@@ -630,6 +634,8 @@ const translations = {
         greeting_evening: "晚上好",
         greeting_night: "晚上好",
         welcomeMessage: "今日公司概览",
+        allStatuses: "所有状态",
+        fullName: "全名",
     },
 };
 

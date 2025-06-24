@@ -33,19 +33,17 @@ const Candidate = () => {
 
         try {
             const { data } = await API.get("recruitment/candidates", {
-                params: {
-                    page,
-                    searchTerm,
-                },
+                params: { page, searchTerm },
             });
 
             const candidatesList = data.data.data;
 
             if (candidatesList.length === 0) {
+                if (page === 1) setCandidates([]);
                 setHasMore(false);
-                if (searchTerm) setCandidates([]);
             } else {
                 setCandidates(prev => (append ? [...prev, ...candidatesList] : candidatesList));
+                setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
             swal("error", err.response.data.message);
@@ -55,8 +53,16 @@ const Candidate = () => {
     };
 
     useEffect(() => {
-        fetchCandidates(page, page !== 1, debouncedSearch);
-    }, [page, debouncedSearch]);
+        setPage(1);
+        setHasMore(true);
+        fetchCandidates(1, false, debouncedSearch);
+    }, [debouncedSearch]);
+
+    const loadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchCandidates(nextPage, true, debouncedSearch);
+    };
 
     const calculateYOE = (months_of_experience: number) => {
         const months = months_of_experience;
@@ -150,7 +156,7 @@ const Candidate = () => {
             {loading ? (
                 <ListSkeleton items={searchTerm ? 1 : 3} />
             ) : (
-                <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={candidates.length} next={() => setPage(page + 1)} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
+                <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={candidates.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                     {candidates.map((candidate, index) => (
                         <motion.div key={candidate.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                             <div className="flex items-start justify-between mb-4">

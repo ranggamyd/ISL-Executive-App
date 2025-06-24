@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { User, Mail, Phone, MapPin, Edit3, Camera, Settings, Bell, Shield, LogOut, ChevronRight, X } from "lucide-react";
+import { User, Mail, Phone, MapPin, Edit3, Camera, Settings, Bell, Shield, LogOut, ChevronRight, X, AtSign, IdCard } from "lucide-react";
 import swal from "@/utils/swal";
 
 const ProfilePage: React.FC = () => {
@@ -157,6 +157,24 @@ const ProfilePage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("contactInformation")}</h3>
                 <div className="space-y-4">
                     <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <IdCard size={18} className="text-purple-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">{t("fullName")}</p>
+                            <p className="text-xs font-medium text-gray-900">{user?.name}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <AtSign size={18} className="text-blue-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">{t("username")}</p>
+                            <p className="text-xs font-medium text-gray-900">{user?.username}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <Mail size={18} className="text-blue-600" />
                         </div>
@@ -172,15 +190,6 @@ const ProfilePage: React.FC = () => {
                         <div>
                             <p className="text-sm text-gray-600">{t("phoneNumber")}</p>
                             <p className="text-xs font-medium text-gray-900">{user?.phone}</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            <MapPin size={18} className="text-purple-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">{t("officeLocation")}</p>
-                            <p className="text-xs font-medium text-gray-900">Jakarta, Indonesia</p>
                         </div>
                     </div>
                 </div>
@@ -221,7 +230,7 @@ const ProfilePage: React.FC = () => {
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("editProfile")}</h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t("name")}</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t("fullName")}</label>
                                 <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
@@ -229,7 +238,7 @@ const ProfilePage: React.FC = () => {
                                 <input type="text" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t("email")}</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t("emailAddress")}</label>
                                 <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
