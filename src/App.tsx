@@ -13,6 +13,7 @@ import EmployeePage from "./pages/Employee/EmployeePage";
 import RecruitmentPage from "./pages/Recruitment/RecruitmentPage";
 import { Detail as CandidateDetailPage } from "./pages/Recruitment/Detail";
 import { Detail as EmployeeDetailPage } from "./pages/Employee/Employee/Detail";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
@@ -32,45 +33,47 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const App: React.FC = () => {
     return (
-        <LanguageProvider>
-            <AuthProvider>
-                <Router basename="/exec" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                    <Routes>
-                        {/* Public Routes */}
-                        <Route
-                            path="/login"
-                            element={
-                                <PublicRoute>
-                                    <LoginPage />
-                                </PublicRoute>
-                            }
-                        />
+        <ThemeProvider>
+            <LanguageProvider>
+                <AuthProvider>
+                    <Router basename="/exec" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                        <Routes>
+                            {/* Public Routes */}
+                            <Route
+                                path="/login"
+                                element={
+                                    <PublicRoute>
+                                        <LoginPage />
+                                    </PublicRoute>
+                                }
+                            />
 
-                        {/* Protected Routes */}
-                        <Route
-                            path="/"
-                            element={
-                                <ProtectedRoute>
-                                    <Layout />
-                                </ProtectedRoute>
-                            }
-                        >
-                            <Route index element={<HomePage />} />
-                            <Route path="/dashboard" element={<HomePage />} />
-                            <Route path="/recruitment" element={<RecruitmentPage />} />
-                            <Route path="/recruitment/candidateDetail" element={<CandidateDetailPage />} />
-                            <Route path="/sales" element={<SalesPage />} />
-                            <Route path="/employee" element={<EmployeePage />} />
-                            <Route path="/employee/employeeDetail" element={<EmployeeDetailPage />} />
-                            <Route path="/profile" element={<ProfilePage />} />
-                        </Route>
+                            {/* Protected Routes */}
+                            <Route
+                                path="/"
+                                element={
+                                    <ProtectedRoute>
+                                        <Layout />
+                                    </ProtectedRoute>
+                                }
+                            >
+                                <Route index element={<HomePage />} />
+                                <Route path="/dashboard" element={<HomePage />} />
+                                <Route path="/recruitment" element={<RecruitmentPage />} />
+                                <Route path="/recruitment/candidateDetail" element={<CandidateDetailPage />} />
+                                <Route path="/sales" element={<SalesPage />} />
+                                <Route path="/employee" element={<EmployeePage />} />
+                                <Route path="/employee/employeeDetail" element={<EmployeeDetailPage />} />
+                                <Route path="/profile" element={<ProfilePage />} />
+                            </Route>
 
-                        {/* Catch all route */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                </Router>
-            </AuthProvider>
-        </LanguageProvider>
+                            {/* Catch all route */}
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </Router>
+                </AuthProvider>
+            </LanguageProvider>
+        </ThemeProvider>
     );
 };
 

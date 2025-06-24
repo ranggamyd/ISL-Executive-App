@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { User, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { SimpleThemeToggle } from "../Common/ThemeToggle";
 import React, { useState, useRef, useEffect } from "react";
 import { useLanguage, type Language } from "@/contexts/LanguageContext";
 
@@ -84,15 +85,16 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     };
 
     return (
-        <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40">
+        <header className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40">
             <div className="flex items-center justify-between px-6 py-4">
                 <div className="flex items-center space-x-4">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+                        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
                     </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
+                    <SimpleThemeToggle />
                     <div className="relative" ref={langDropdownRef}>
                         <button onClick={handleLanguageMenuToggle} className="p-2 hover:bg-gray-100 rounded-lg flex items-center space-x-1">
                             <span className="text-sm font-medium text-gray-700">{languages.find(l => l.code === language)?.flag}</span>
