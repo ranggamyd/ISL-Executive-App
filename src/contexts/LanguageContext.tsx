@@ -235,6 +235,12 @@ const translations = {
         currentPassword: "Password Saat Ini",
         newPassword: "Password Baru",
         confirmNewPassword: "Konfirmasi Password Baru",
+        credential: "Nama Pengguna / E-Mail",
+        allMenus: "Semua Menu",
+        accessDoors: "Akses Pintu",
+        pageNotFound: "Halaman Tidak Ditemukan",
+        pageNotFoundDesc: "Halaman yang kamu cari tidak tersedia atau telah dipindahkan",
+        backToHome: "Kembali ke Beranda",
     },
 
     en: {
@@ -452,6 +458,12 @@ const translations = {
         currentPassword: "Current Password",
         newPassword: "New Password",
         confirmNewPassword: "Confirm New Password",
+        credential: "Username / E-Mail",
+        allMenus: "All Menus",
+        accessDoors: "Access Doors",
+        pageNotFound: "Page Not Found",
+        pageNotFoundDesc: "The page you are looking for is not available or has been moved",
+        backToHome: "Back to Home",
     },
 
     zh: {
@@ -669,6 +681,12 @@ const translations = {
         currentPassword: "当前密码",
         newPassword: "新密码",
         confirmNewPassword: "确认新密码",
+        credential: "用户名 / 邮箱",
+        allMenus: "显示所有",
+        accessDoors: "访问门",
+        pageNotFound: "页面未找到",
+        pageNotFoundDesc: "您要找的页面不存在或已被移动",
+        backToHome: "返回主页",
     },
 };
 

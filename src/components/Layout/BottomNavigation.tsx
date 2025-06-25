@@ -30,8 +30,8 @@ const BottomNavigation: React.FC = () => {
     };
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-safe">
-            <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 mx-2 mb-4">
+        <div className="fixed bottom-0 left-0 right-0 z-50">
+            <div className="bg-white/95 backdrop-blur-lg rounded-t-xl shadow-2xl border border-gray-200/50">
                 <div className="flex items-center justify-between px-2 py-2">
                     {navItems.map(item => {
                         const Icon = item.icon;

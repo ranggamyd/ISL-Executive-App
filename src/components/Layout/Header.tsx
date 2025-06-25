@@ -31,6 +31,8 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     const avatarDropdownRef = useRef<HTMLDivElement | null>(null);
     const langDropdownRef = useRef<HTMLDivElement | null>(null);
 
+    const [isScrolled, setIsScrolled] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -84,12 +86,21 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         });
     };
 
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10); // bisa disesuaikan threshold-nya
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
-        <header className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40">
-            <div className="flex items-center justify-between px-6 py-4">
+        <header className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled ? "bg-white/75 dark:bg-gray-800/95 shadow-md backdrop-blur-lg border-b border-gray-200/50" : "bg-transparent border-none"}`}>
+            <div className="flex items-center justify-between px-6 py-3">
                 <div className="flex items-center space-x-4">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
+                        <h1 className={`text-xl font-bold text-gray-900 dark:text-white`}>{title}</h1>
                     </div>
                 </div>
 

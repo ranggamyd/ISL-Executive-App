@@ -1,34 +1,52 @@
-import React from "react";
+import React, { Suspense } from "react";
+import { lazyImport } from "./utils/lazyImport";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-// Pages
+import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/Auth/LoginPage";
-import SalesPage from "./pages/Sales/SalesPage";
 import HomePage from "./pages/Dashboard/HomePage";
 import { Layout } from "./components/Layout/Layout";
 import ProfilePage from "./pages/Profile/ProfilePage";
-import EmployeePage from "./pages/Employee/EmployeePage";
-import RecruitmentPage from "./pages/Recruitment/RecruitmentPage";
-import { Detail as CandidateDetailPage } from "./pages/Recruitment/Detail";
-import { Detail as EmployeeDetailPage } from "./pages/Employee/Employee/Detail";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import LoadingScreen from "./components/Common/LoadingScreen";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user } = useAuth();
+const AppRouter: React.FC = () => {
+    const { user, menus } = useAuth();
 
-    if (!user) return <Navigate to="/login" replace />;
+    return (
+        <Router basename="/exec/" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Routes>
+                <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
 
-    return <>{children}</>;
-};
+                <Route path="/" element={!user ? <Navigate to="/login" replace /> : <Layout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="/dashboard" element={<HomePage />} />
+                    {menus?.map(menu => {
+                        const LazyComponent = lazyImport(menu.path);
+                        return (
+                            <Route
+                                key={menu.path}
+                                path={menu.path}
+                                element={
+                                    <ErrorBoundary>
+                                        <Suspense fallback={<LoadingScreen />}>
+                                            <LazyComponent />
+                                        </Suspense>
+                                    </ErrorBoundary>
+                                }
+                            />
+                        );
+                    })}
+                    <Route path="/profile" element={<ProfilePage />} />
+                </Route>
 
-const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user } = useAuth();
-
-    if (user) return <Navigate to="/" replace />;
-
-    return <>{children}</>;
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </Router>
+    );
 };
 
 const App: React.FC = () => {
@@ -36,41 +54,7 @@ const App: React.FC = () => {
         <ThemeProvider>
             <LanguageProvider>
                 <AuthProvider>
-                    <Router basename="/exec" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                        <Routes>
-                            {/* Public Routes */}
-                            <Route
-                                path="/login"
-                                element={
-                                    <PublicRoute>
-                                        <LoginPage />
-                                    </PublicRoute>
-                                }
-                            />
-
-                            {/* Protected Routes */}
-                            <Route
-                                path="/"
-                                element={
-                                    <ProtectedRoute>
-                                        <Layout />
-                                    </ProtectedRoute>
-                                }
-                            >
-                                <Route index element={<HomePage />} />
-                                <Route path="/dashboard" element={<HomePage />} />
-                                <Route path="/recruitment" element={<RecruitmentPage />} />
-                                <Route path="/recruitment/candidateDetail" element={<CandidateDetailPage />} />
-                                <Route path="/sales" element={<SalesPage />} />
-                                <Route path="/employee" element={<EmployeePage />} />
-                                <Route path="/employee/employeeDetail" element={<EmployeeDetailPage />} />
-                                <Route path="/profile" element={<ProfilePage />} />
-                            </Route>
-
-                            {/* Catch all route */}
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                    </Router>
+                    <AppRouter />
                 </AuthProvider>
             </LanguageProvider>
         </ThemeProvider>

@@ -2,13 +2,21 @@ import API from "@/lib/api";
 import swal from "@/utils/swal";
 import { User } from "@/types/user";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Menu } from "@/types/menu";
+
+interface Permission {
+    menu: string;
+    access: string[];
+}
 
 interface AuthContextType {
     user: User | null;
+    token: string | null;
+    menus: Menu[] | null;
+    permissions: Permission | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
-    resetPassword: (email: string) => Promise<boolean>;
     isAuthenticated: boolean;
     refresh: () => Promise<void>;
 }
@@ -28,30 +36,74 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState(null);
+    const [menus, setMenus] = useState<Menu[] | null>(null);
+    const [permissions, setPermissions] = useState<Permission | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const savedUser = localStorage.getItem("user");
         const savedToken = localStorage.getItem("token");
-        if (savedUser && savedToken) setUser(JSON.parse(savedUser));
+        const savedMenus = localStorage.getItem("menus");
+        const savedPermissions = localStorage.getItem("permissions");
+
+        if (savedUser && savedToken && savedMenus && savedPermissions) {
+            setUser(JSON.parse(savedUser));
+            setToken(JSON.parse(savedToken));
+            setMenus(JSON.parse(savedMenus));
+            setPermissions(JSON.parse(savedPermissions));
+        }
 
         setLoading(false);
     }, []);
 
-    const login = async (email: string, password: string): Promise<boolean> => {
+    const login = async (credential: string, password: string): Promise<boolean> => {
         setLoading(true);
 
         try {
-            const response = await API.post("login", {
-                email,
-                password,
-            });
+            const response = await API.post("login", { credential, password });
+
+            const responseData = response.data.data;
+
+            setUser(responseData.user);
+            setToken(responseData.token);
+            setMenus(responseData.menus);
+            setPermissions(responseData.permissions);
+
+            localStorage.setItem("user", JSON.stringify(responseData.user));
+            localStorage.setItem("token", JSON.stringify(responseData.token));
+            localStorage.setItem("menus", JSON.stringify(responseData.menus));
+            localStorage.setItem("permissions", JSON.stringify(responseData.permissions));
+
+            swal("success", responseData.message);
+
+            return true;
+        } catch (err: any) {
+            swal("error", err.response.data.message);
+
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const logout = async () => {
+        setLoading(true);
+
+        try {
+            const response = await API.post("logout");
 
             const responseData = response.data;
 
-            setUser(responseData.user);
-            localStorage.setItem("user", JSON.stringify(responseData.user));
-            localStorage.setItem("token", JSON.stringify(responseData.token));
+            setUser(null);
+            setToken(null);
+            setMenus(null);
+            setPermissions(null);
+
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            localStorage.removeItem("menus");
+            localStorage.removeItem("permissions");
 
             swal("success", responseData.message);
 
@@ -72,43 +124,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             const response = await API.get("profile/me");
 
-            const responseData = response.data;
+            const responseData = response.data.data;
 
             setUser(responseData.user);
+            setMenus(responseData.menus);
+            setPermissions(responseData.permissions);
+
             localStorage.setItem("user", JSON.stringify(responseData.user));
+            localStorage.setItem("permissions", JSON.stringify(responseData.menus));
+            localStorage.setItem("permissions", JSON.stringify(responseData.permissions));
         } catch (err: any) {
             swal("error", err.response.data.message);
         }
     };
 
-    const logout = async () => {
-        setLoading(true);
-
-        try {
-            const response = await API.post("logout");
-
-            const responseData = response.data;
-
-            setUser(null);
-            localStorage.removeItem("user");
-            localStorage.removeItem("token");
-
-            swal("success", responseData.message);
-
-            return true;
-        } catch (err: any) {
-            swal("error", err.response.data.message);
-
-            return false;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const resetPassword = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return true;
-    };
-
-    return <AuthContext.Provider value={{ user, loading, login, logout, resetPassword, isAuthenticated: !!user, refresh }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, token, menus, permissions, loading, login, logout, isAuthenticated: !!user, refresh }}>{children}</AuthContext.Provider>;
 };

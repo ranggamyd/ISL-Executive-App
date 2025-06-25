@@ -9,7 +9,7 @@ import LoadingSpinner from "@/components/Common/LoadingSpinner";
 const LoginPage: React.FC = () => {
     const { t } = useLanguage();
 
-    const [email, setEmail] = useState("");
+    const [credential, setCredential] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
         setLoading(true);
 
         try {
-            const success = await login(email, password);
+            const success = await login(credential, password);
 
             if (success) navigate("/");
         } catch (error) {
@@ -48,10 +48,10 @@ const LoginPage: React.FC = () => {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white/95 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">{t("email")}</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">{t("credential")}</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/80" placeholder="director@isl.com" required />
+                                <input type="credential" value={credential} onChange={e => setCredential(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/80" placeholder="example" required />
                             </div>
                         </div>
 
