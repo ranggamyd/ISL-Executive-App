@@ -9,6 +9,8 @@ import { ListSkeleton } from "@/components/Common/Skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AccessLogs as AccessLogsType } from "@/types/accessLogs";
 import { ChevronDown, DoorOpen, Filter, LaptopMinimalCheck, Search } from "lucide-react";
+import SearchInput from "@/components/Common/SearchInput";
+import FilterButton from "@/components/Common/FilterButton";
 
 const AccessDoors = () => {
     const { t } = useLanguage();
@@ -46,7 +48,7 @@ const AccessDoors = () => {
                 if (page === 1) setAccessLogs([]);
                 setHasMore(false);
             } else {
-                setAccessLogs(prev => (append ? [...prev, ...accesslogsList] : accesslogsList));
+                setAccessLogs((prev) => (append ? [...prev, ...accesslogsList] : accesslogsList));
                 setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
@@ -113,7 +115,7 @@ const AccessDoors = () => {
             confirmButtonColor: mode === "normalize" ? "#22C55E" : "#7e22ce",
             showCancelButton: true,
             reverseButtons: true,
-        }).then(async result => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: "info",
@@ -136,27 +138,23 @@ const AccessDoors = () => {
 
     return (
         <div className="p-6 space-y-4">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 mb-6">
-                <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("accessLogList")}</h2>
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("accessLogList")}</h2>
                 <div className="flex items-center space-x-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                        <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <div className="flex-1">
+                        <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                     </div>
                     <div className="relative" ref={filterRef}>
-                        <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
-                            <Filter size={18} className="text-gray-600" />
-                            <ChevronDown size={16} className={`text-gray-600 transition-transform ${filterOpen ? "rotate-180" : ""}`} />
-                        </button>
+                        <FilterButton filterOpen={filterOpen} setFilterOpen={setFilterOpen} />
 
                         {filterOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                                 <div className="p-4 space-y-4">
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">{t("device")}</label>
-                                        <select value={selectedDevice} onChange={e => setSelectedDevice(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("device")}</label>
+                                        <select value={selectedDevice} onChange={(e) => setSelectedDevice(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="">{t("allDevices")}</option>
-                                            {uniqueDevices.map(device => (
+                                            {uniqueDevices.map((device) => (
                                                 <option key={device.id} value={device.id}>
                                                     {device.nama_device}
                                                 </option>
@@ -164,10 +162,10 @@ const AccessDoors = () => {
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">{t("employee")}</label>
-                                        <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("employee")}</label>
+                                        <select value={selectedEmployee} onChange={(e) => setSelectedEmployee(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="">{t("allEmployees")}</option>
-                                            {uniqueEmployees.map(employee => (
+                                            {uniqueEmployees.map((employee) => (
                                                 <option key={employee.id} value={employee.id}>
                                                     {employee.nama_lengkap}
                                                 </option>
@@ -175,7 +173,7 @@ const AccessDoors = () => {
                                         </select>
                                     </div>
                                     <div className="flex justify-end">
-                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-800 hover:underline me-1">
+                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:underline me-1">
                                             {t("clearAll")}
                                         </button>
                                     </div>

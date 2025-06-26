@@ -6,6 +6,9 @@ import { LucideIconMap } from "@/utils/dynamicIcon";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Menu } from "@/types/menu";
+import MenuItemCard from "../Common/MenuItemCard";
+import MenuItemList from "../Common/MenuItemList";
+import SearchInput from "../Common/SearchInput";
 
 const MenuDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
     const { t } = useLanguage();
@@ -63,10 +66,7 @@ const MenuDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) =
                         {/* Content */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
                             {/* Search */}
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
-                                <Search className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
-                                <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white" />
-                            </motion.div>
+                            <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
                             {/* Grouped Menus */}
                             {Object.entries(grouped).map(([groupName, items]) => {
@@ -81,43 +81,8 @@ const MenuDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) =
                                         </h3>
 
                                         <div className={viewMode === "card" ? "grid grid-cols-2 sm:grid-cols-3 gap-3" : "space-y-2"}>
-                                            {items.map((menu) => {
-                                                const iconName = menu.icon as keyof typeof LucideIconMap;
-                                                const Icon = LucideIconMap[iconName] as React.ElementType;
-
-                                                return viewMode === "card" ? (
-                                                    <motion.button
-                                                        key={menu.id}
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.96 }}
-                                                        onClick={() => {
-                                                            navigate(`/${menu.path}`);
-                                                            onClose();
-                                                        }}
-                                                        className="group flex flex-col items-center justify-center gap-2 p-3 rounded-2xl shadow-sm bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 hover:from-blue-50 hover:to-white dark:hover:from-blue-900/20 dark:hover:to-gray-700 hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300"
-                                                    >
-                                                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-blue-100 via-white to-purple-100 dark:from-blue-900/50 dark:via-gray-700 dark:to-purple-900/50 border border-blue-200 dark:border-blue-700 shadow-sm group-hover:shadow-md transition-all duration-300">
-                                                            <Icon size={18} className="text-blue-600 dark:text-blue-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300" />
-                                                        </div>
-                                                        <p className="text-xs font-semibold text-center text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-all duration-300 truncate w-full">{t(menu.name)}</p>
-                                                    </motion.button>
-                                                ) : (
-                                                    <motion.button
-                                                        key={menu.id}
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.96 }}
-                                                        onClick={() => {
-                                                            navigate(`/${menu.path}`);
-                                                            onClose();
-                                                        }}
-                                                        className="group flex flex-row w-full items-center justify-center gap-2 p-3 rounded-2xl shadow-sm bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 hover:from-blue-50 hover:to-white dark:hover:from-blue-900/20 dark:hover:to-gray-700 hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300"
-                                                    >
-                                                        <div className="flex items-center justify-center w-12 h-10 rounded-full bg-gradient-to-tr from-blue-100 via-white to-purple-100 dark:from-blue-900/50 dark:via-gray-700 dark:to-purple-900/50 border border-blue-200 dark:border-blue-700 shadow-sm group-hover:shadow-md transition-all duration-300">
-                                                            <Icon size={18} className="text-blue-600 dark:text-blue-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300" />
-                                                        </div>
-                                                        <p className="text-xs font-semibold text-start text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-all duration-300 truncate w-full">{t(menu.name)}</p>
-                                                    </motion.button>
-                                                );
+                                            {items.map((menu, index) => {
+                                                return viewMode === "card" ? <MenuItemCard key={menu.id} index={index} menu={menu} setIsDrawerOpen={() => {}} /> : <MenuItemList key={menu.id} index={index} menu={menu} onClose={onClose} />;
                                             })}
                                         </div>
                                     </div>

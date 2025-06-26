@@ -8,6 +8,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { ListSkeleton } from "@/components/Common/Skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Filter, Search, ChevronDown, FileText, CheckCircle, CircleAlert } from "lucide-react";
+import DateInput from "@/components/Common/DateInput";
+import FilterButton from "@/components/Common/FilterButton";
+import SearchInput from "@/components/Common/SearchInput";
 
 const SalesIns: React.FC = () => {
     const { t } = useLanguage();
@@ -46,7 +49,7 @@ const SalesIns: React.FC = () => {
                 if (page === 1) setSalesIns([]);
                 setHasMore(false);
             } else {
-                setSalesIns(prev => (append ? [...prev, ...salesInsList] : salesInsList));
+                setSalesIns((prev) => (append ? [...prev, ...salesInsList] : salesInsList));
                 setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
@@ -116,7 +119,7 @@ const SalesIns: React.FC = () => {
     };
 
     const toggleItem = (index: number) => {
-        setOpenItems(prev => ({
+        setOpenItems((prev) => ({
             ...prev,
             [index]: !prev[index],
         }));
@@ -124,24 +127,23 @@ const SalesIns: React.FC = () => {
 
     return (
         <div className="p-6 space-y-4">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("salesIns")}</h2>
-                <div className="flex items-center justify-center space-x-3">
-                    <input type="date" value={date} onChange={e => setDate(e.target.value)} className="px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("recapDailyQuotes")}</h2>
+                <div className="flex items-center space-x-4">
+                    <div className="flex-1">
+                        <DateInput date={date} setDate={setDate} />
+                    </div>
                     <div className="relative" ref={filterRef}>
-                        <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
-                            <Filter size={18} className="text-gray-600" />
-                            <ChevronDown size={16} className={`text-gray-600 transition-transform ${filterOpen ? "rotate-180" : ""}`} />
-                        </button>
+                        <FilterButton filterOpen={filterOpen} setFilterOpen={setFilterOpen} />
 
                         {filterOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                                 <div className="p-4 space-y-4">
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">{t("sales")}</label>
-                                        <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("sales")}</label>
+                                        <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="">{t("allStatuses")}</option>
-                                            {uniqueStatuses.map(status => (
+                                            {uniqueStatuses.map((status) => (
                                                 <option key={status} value={status}>
                                                     {status}
                                                 </option>
@@ -149,10 +151,10 @@ const SalesIns: React.FC = () => {
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">{t("paymentType")}</label>
-                                        <select value={selectedPaymentType} onChange={e => setSelectedPaymentType(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("paymentType")}</label>
+                                        <select value={selectedPaymentType} onChange={(e) => setSelectedPaymentType(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="">{t("allPaymentTypes")}</option>
-                                            {uniquePaymentTypes.map(paymentType => (
+                                            {uniquePaymentTypes.map((paymentType) => (
                                                 <option key={paymentType} value={paymentType}>
                                                     {paymentType}
                                                 </option>
@@ -160,10 +162,10 @@ const SalesIns: React.FC = () => {
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700">{t("accountType")}</label>
-                                        <select value={selectedAccountType} onChange={e => setSelectedAccountType(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("accountType")}</label>
+                                        <select value={selectedAccountType} onChange={(e) => setSelectedAccountType(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="">{t("allAccountTypes")}</option>
-                                            {uniqueAccountTypes.map(accountType => (
+                                            {uniqueAccountTypes.map((accountType) => (
                                                 <option key={accountType} value={accountType}>
                                                     {accountType}
                                                 </option>
@@ -171,7 +173,7 @@ const SalesIns: React.FC = () => {
                                         </select>
                                     </div>
                                     <div className="flex justify-end">
-                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-800 hover:underline me-1">
+                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:underline me-1">
                                             {t("clearAll")}
                                         </button>
                                     </div>
@@ -182,17 +184,10 @@ const SalesIns: React.FC = () => {
                 </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 mb-6">
-                <div className="flex items-center space-x-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                        <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                    </div>
-                </div>
-            </motion.div>
+            <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
             <div className="flex justify-end items-end gap-2">
-                <h6 className="font-medium uppercase">Total :</h6> <span className="bg-green-100 text-green-800 text-md font-medium px-3 py-0.5 rounded-lg">{formatCurrency(salesInTotal)}</span>
+                <h6 className="font-medium uppercase dark:text-white">Total :</h6> <span className="bg-green-100 text-green-800 text-md font-medium px-3 py-0.5 rounded-lg">{formatCurrency(salesInTotal)}</span>
             </div>
 
             {loading ? (

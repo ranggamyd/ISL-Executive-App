@@ -10,6 +10,8 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Position as PositionType, Vehicle as VehicleType } from "@/types/gps";
 import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Filter, ChevronDown, Minimize2, Maximize2 } from "lucide-react";
+import SearchInput from "@/components/Common/SearchInput";
+import FilterButton from "@/components/Common/FilterButton";
 
 const icons = {
     car: {
@@ -71,7 +73,7 @@ const GpsView = () => {
             setIsConnected(true);
         };
 
-        websocket.onmessage = event => {
+        websocket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.positions) {
                 updatePositions(data.positions);
@@ -85,7 +87,7 @@ const GpsView = () => {
             setTimeout(connectWebSocket, 5000);
         };
 
-        websocket.onerror = error => {
+        websocket.onerror = (error) => {
             console.error("WebSocket error:", error);
             setIsConnected(false);
             websocket.close();
@@ -95,9 +97,9 @@ const GpsView = () => {
     };
 
     const updatePositions = (positionsData: PositionType[]) => {
-        setPositions(prevPositions => {
+        setPositions((prevPositions) => {
             const updatedPositions = { ...prevPositions };
-            positionsData.forEach(position => {
+            positionsData.forEach((position) => {
                 updatedPositions[position.deviceId] = position;
             });
 
@@ -106,10 +108,10 @@ const GpsView = () => {
     };
 
     const updateDevices = (devicesData: VehicleType[]) => {
-        setVehicles(prevVehicles => {
+        setVehicles((prevVehicles) => {
             const updatedVehicles = [...prevVehicles];
-            devicesData.forEach(device => {
-                const index = updatedVehicles.findIndex(v => v.id === device.id);
+            devicesData.forEach((device) => {
+                const index = updatedVehicles.findIndex((v) => v.id === device.id);
                 if (index !== -1) {
                     updatedVehicles[index] = { ...updatedVehicles[index], ...device };
                 } else {
@@ -128,15 +130,15 @@ const GpsView = () => {
                     Authorization: "Bearer RzBFAiAsSMLm1ORiB2hH9KQvaGjNSN-1jHrV7nK_WIf1cF4CnwIhAMjtQNnyRNrpy4NogP8qHJWdv_5KVyiWcTLVt7JKSsN2eyJ1IjozLCJlIjoiMjA2MC0wNy0wN1QxNzowMDowMC4wMDArMDA6MDAifQ",
                 },
             })
-            .then(response => {
+            .then((response) => {
                 const vehiclesData = response.data;
-                const motorcycles = vehiclesData.filter(v => v.category === "motorcycle");
-                const cars = vehiclesData.filter(v => v.category === "car");
-                const otherVehicles = vehiclesData.filter(v => v.category !== "motorcycle" && v.category !== "car");
+                const motorcycles = vehiclesData.filter((v) => v.category === "motorcycle");
+                const cars = vehiclesData.filter((v) => v.category === "car");
+                const otherVehicles = vehiclesData.filter((v) => v.category !== "motorcycle" && v.category !== "car");
 
                 setVehicles([...motorcycles, ...cars, ...otherVehicles]);
             })
-            .catch(error => {
+            .catch((error) => {
                 swal("error", error.message);
             });
     };
@@ -197,7 +199,7 @@ const GpsView = () => {
     };
 
     // Updated filter function to include status filter
-    const getFilteredVehicles = vehicles.filter(vehicle => {
+    const getFilteredVehicles = vehicles.filter((vehicle) => {
         const position = positions[vehicle.id];
         const status = position ? getVehicleStatus(vehicle, position) : "Offline";
 
@@ -258,7 +260,7 @@ const GpsView = () => {
         }
     };
 
-    const categories = [...new Set(vehicles.map(v => v.category))];
+    const categories = [...new Set(vehicles.map((v) => v.category))];
     const statuses = ["Moving", "Idling", "Parking", "Offline"];
 
     const clearAllFilters = () => {
@@ -307,7 +309,7 @@ const GpsView = () => {
                                     }}
                                 >
                                     <TileLayer url="https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}" maxZoom={20} subdomains={["mt0", "mt1", "mt2", "mt3"]} attribution="&copy; Google" />
-                                    {vehicles.map(vehicle => {
+                                    {vehicles.map((vehicle) => {
                                         const position = positions[vehicle.id];
                                         if (position) {
                                             const iconUrl = getVehicleIconUrl(vehicle, position);
@@ -332,42 +334,34 @@ const GpsView = () => {
                 </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6 space-y-3">
-                <div className="flex items-center justify-center">
-                    <h2 className="text-xl font-bold text-gray-800">{t("vehicleList")}</h2>
-                </div>
-
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("vehicleList")}</h2>
                 <div className="flex items-center space-x-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                        <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    <div className="flex-1">
+                        <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                     </div>
                     <div className="relative" ref={filterRef}>
-                        <button onClick={() => setFilterOpen(!filterOpen)} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
-                            <Filter size={18} className="text-gray-600" />
-                            <ChevronDown size={16} className={`text-gray-600`} />
-                        </button>
+                        <FilterButton filterOpen={filterOpen} setFilterOpen={setFilterOpen} />
 
-                        {/* Dropdown Menu */}
                         {filterOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                                 <div className="p-4 space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t("category")}</label>
-                                        <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("category")}</label>
+                                        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                             <option value="all">{t("all")}</option>
-                                            {categories.map(category => (
+                                            {categories.map((category) => (
                                                 <option key={category} value={category}>
                                                     {t(category.toLowerCase())}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                        <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">Status</label>
+                                        <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                             <option value="all">{t("all")}</option>
-                                            {statuses.map(status => (
+                                            {statuses.map((status) => (
                                                 <option key={status} value={status}>
                                                     {t(status.toLowerCase())}
                                                 </option>
@@ -405,7 +399,7 @@ const GpsView = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ delay: index * 0.05 }}
-                            onClick={e => {
+                            onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 handleVehicleClick(vehicle.id);
