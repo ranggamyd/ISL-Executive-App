@@ -9,7 +9,7 @@ import { AnimatedCurrency, AnimatedNumber } from "@/components/Common/AnimatedCo
 import { BarChart3, Wallet, Activity, CalendarCheck, PackageCheck, BarChart2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-const SalesInReport: React.FC = () => {
+const SalesInReports: React.FC = () => {
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -128,7 +128,7 @@ const SalesInReport: React.FC = () => {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="p-6 space-y-4">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                 <h2 className="text-xl font-bold text-gray-800 text-center">{t("salesInReports")}</h2>
             </motion.div>
@@ -184,4 +184,4 @@ const SalesInReport: React.FC = () => {
     );
 };
 
-export default SalesInReport;
+export default SalesInReports;

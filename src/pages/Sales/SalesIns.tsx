@@ -123,7 +123,7 @@ const SalesIns: React.FC = () => {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="p-6 space-y-4">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                 <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("salesIn")}</h2>
                 <div className="flex items-center justify-center space-x-3">

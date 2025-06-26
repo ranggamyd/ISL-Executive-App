@@ -8,7 +8,7 @@ import { ListSkeleton, StatSkeleton } from "@/components/Common/Skeleton";
 import { AnimatedNumber, AnimatedCurrency } from "@/components/Common/AnimatedCounter";
 import { BarChart3, Filter, Search, ChevronDown, UserPlus, Users, FileText, Coins, Wallet } from "lucide-react";
 
-const DailyQuote: React.FC = () => {
+const DailyQuotes: React.FC = () => {
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -125,7 +125,7 @@ const DailyQuote: React.FC = () => {
     ];
 
     return (
-        <div className="space-y-4">
+        <div className="p-6 space-y-4">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                 <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("recapDailyQuotes")}</h2>
 
@@ -279,4 +279,4 @@ const DailyQuote: React.FC = () => {
     );
 };
 
-export default DailyQuote;
+export default DailyQuotes;

@@ -1,5 +1,5 @@
-import { ArrowLeft } from "lucide-react";
-import { useState, useMemo } from "react";
+import { ArrowLeft, LayoutGrid, List, Search } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LucideIconMap } from "@/utils/dynamicIcon";
@@ -10,14 +10,24 @@ import { Menu } from "@/types/menu";
 const MenuDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
     const { t } = useLanguage();
     const { menus } = useAuth() as { menus: Menu[] };
-
     const navigate = useNavigate();
-    const [search, setSearch] = useState("");
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [viewMode, setViewMode] = useState<"card" | "list">("card");
+
+    useEffect(() => {
+        const stored = localStorage.getItem("drawerViewMode");
+        if (stored === "list" || stored === "card") setViewMode(stored);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("drawerViewMode", viewMode);
+    }, [viewMode]);
 
     const filtered = useMemo(() => {
-        if (!search) return menus;
-        return menus.filter(m => t(m.name).toLowerCase().includes(search.toLowerCase()));
-    }, [menus, search, t]);
+        if (!searchTerm) return menus;
+        return menus.filter(m => t(m.name).toLowerCase().includes(searchTerm.toLowerCase()));
+    }, [menus, searchTerm, t]);
 
     const grouped = useMemo(() => {
         return filtered.reduce<Record<string, Menu[]>>((acc, curr) => {
@@ -31,60 +41,93 @@ const MenuDrawer = ({ open, onClose }: { open: boolean; onClose: () => void }) =
         <AnimatePresence>
             {open && (
                 <>
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black z-[998]" onClick={onClose} />
+                    {/* Backdrop */}
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[998]" onClick={onClose} />
 
-                    <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="fixed inset-0 z-[999] bg-white flex flex-col">
-                        <div className="p-4 border-b border-gray-200 flex items-center justify-start">
-                            <button onClick={onClose} className="me-3 text-gray-500 hover:text-black text-2xl">
-                                <ArrowLeft size={24} />
-                            </button>
-                            <h3 className="text-lg font-semibold text-gray-700">{t("allMenus")}</h3>
+                    {/* Drawer */}
+                    <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="fixed top-0 bottom-0 end-0 w-full md:w-[26rem] z-[999] bg-white flex flex-col shadow-xl">
+                        {/* Header */}
+                        <div className="p-4 bg-gradient-to-r from-blue-600/90 via-blue-400 to-purple-600/90 text-white flex items-center justify-between shadow-md">
+                            <div className="flex items-center gap-3">
+                                <button onClick={onClose} className="text-white hover:text-gray-100">
+                                    <ArrowLeft size={22} />
+                                </button>
+                                <h3 className="text-base font-semibold">{t("allMenus")}</h3>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button onClick={() => setViewMode("card")} className={`p-1 rounded-md ${viewMode === "card" ? "bg-white text-blue-600" : "text-white hover:text-gray-200"}`}>
+                                    <LayoutGrid size={18} />
+                                </button>
+                                <button onClick={() => setViewMode("list")} className={`p-1 rounded-md ${viewMode === "list" ? "bg-white text-blue-600" : "text-white hover:text-gray-200"}`}>
+                                    <List size={18} />
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                            <input type="text" placeholder={t("search") + "..."} value={search} onChange={e => setSearch(e.target.value)} className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-                            {Object.entries(grouped).map(([groupName, items]) => (
-                                <div key={groupName}>
-                                    <h3 className="text-xs font-bold text-gray-400 uppercase mb-2">{groupName}</h3>
-                                    <div className="space-y-3">
-                                        {items.map(menu => {
-                                            const iconName = menu.icon as keyof typeof LucideIconMap;
-                                            const Icon = LucideIconMap[iconName] as React.ElementType;
-                                            const theme = menu.theme || "gray";
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                            {/* Search */}
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
+                                <Search className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                                <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" />
+                            </motion.div>
 
-                                            return (
-                                                <motion.button
-                                                    key={menu.id}
-                                                    whileHover={{ scale: 1.02 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                    onClick={() => {
-                                                        navigate(`/${menu.path}`);
-                                                        onClose();
-                                                    }}
-                                                    className={`
-                                                        w-full flex items-center gap-3 p-3 rounded-xl
-                                                        border shadow-sm transition-all
-                                                        border-${theme}-100 hover:shadow-md
-                                                    `}
-                                                >
-                                                    {Icon && (
-                                                        <div
-                                                            className={`
-                                                                w-10 h-10 flex items-center justify-center rounded-full
-                                                                bg-gradient-to-br from-${theme}-50 to-${theme}-100
-                                                                border border-${theme}-200
-                                                            `}
-                                                        >
-                                                            <Icon className={`text-${theme}-700`} size={20} />
+                            {/* Grouped Menus */}
+                            {Object.entries(grouped).map(([groupName, items]) => {
+                                const groupIconName = items[0].groupIcon as keyof typeof LucideIconMap;
+                                const GroupIcon = LucideIconMap[groupIconName] as React.ElementType;
+
+                                return (
+                                    <div key={groupName}>
+                                        <h3 className="flex items-center text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 gap-2">
+                                            {GroupIcon && <GroupIcon size={16} className="text-gray-500" />}
+                                            {groupName}
+                                        </h3>
+
+                                        <div className={viewMode === "card" ? "grid grid-cols-2 sm:grid-cols-3 gap-3" : "space-y-2"}>
+                                            {items.map(menu => {
+                                                const iconName = menu.icon as keyof typeof LucideIconMap;
+                                                const Icon = LucideIconMap[iconName] as React.ElementType;
+
+                                                return viewMode === "card" ? (
+                                                    <motion.button
+                                                        key={menu.id}
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.96 }}
+                                                        onClick={() => {
+                                                            navigate(`/${menu.path}`);
+                                                            onClose();
+                                                        }}
+                                                        className="group flex flex-col items-center justify-center gap-2 p-3 rounded-2xl shadow-sm bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:from-blue-50 hover:to-white hover:border-blue-200 transition-all duration-300"
+                                                    >
+                                                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-blue-100 via-white to-purple-100 border border-blue-200 shadow-sm group-hover:shadow-md transition-all duration-300">
+                                                            <Icon size={18} className="text-blue-600 group-hover:text-purple-600 transition-colors duration-300" />
                                                         </div>
-                                                    )}
-                                                    <span className={`text-sm font-medium text-${theme}-800 truncate`}>{t(menu.name)}</span>
-                                                </motion.button>
-                                            );
-                                        })}
+                                                        <p className="text-xs font-semibold text-center text-gray-700 group-hover:text-blue-700 transition-all duration-300 truncate w-full">{t(menu.name)}</p>
+                                                    </motion.button>
+                                                ) : (
+                                                    <motion.button
+                                                        key={menu.id}
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.96 }}
+                                                        onClick={() => {
+                                                            navigate(`/${menu.path}`);
+                                                            onClose();
+                                                        }}
+                                                        className="group flex flex-row w-full items-center justify-center gap-2 p-3 rounded-2xl shadow-sm bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:from-blue-50 hover:to-white hover:border-blue-200 transition-all duration-300"
+                                                    >
+                                                        <div className="flex items-center justify-center w-12 h-10 rounded-full bg-gradient-to-tr from-blue-100 via-white to-purple-100 border border-blue-200 shadow-sm group-hover:shadow-md transition-all duration-300">
+                                                            <Icon size={18} className="text-blue-600 group-hover:text-purple-600 transition-colors duration-300" />
+                                                        </div>
+                                                        <p className="text-xs font-semibold text-start text-gray-700 group-hover:text-blue-700 transition-all duration-300 truncate w-full">{t(menu.name)}</p>
+                                                    </motion.button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </motion.div>
                 </>

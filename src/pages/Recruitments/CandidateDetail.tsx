@@ -8,7 +8,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Candidate, Certificate, Education, Experience, Language, Organization, Skill } from "@/types/candidate";
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, X, Clock, Award, MessageSquare, VenusAndMars, Medal, IdCard, Globe, Building2, ScrollText, ThumbsUp, ThumbsDown, XCircle, CheckCircle } from "lucide-react";
 
-export const Detail: React.FC = () => {
+export const CandidateDetail: React.FC = () => {
     const { t } = useLanguage();
 
     const navigate = useNavigate();
@@ -110,7 +110,7 @@ export const Detail: React.FC = () => {
             )}
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
-                <div onClick={() => navigate("/recruitment")} className="flex items-center space-x-2">
+                <div onClick={() => navigate(-1)} className="flex items-center space-x-2">
                     <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                         <ArrowLeft size={18} className="text-gray-800" />
                     </button>

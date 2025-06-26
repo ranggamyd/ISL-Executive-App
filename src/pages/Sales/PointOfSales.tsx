@@ -1,6 +1,6 @@
 import API from "@/lib/api";
 import swal from "@/utils/swal";
-import SalesChart from "../SalesChart";
+import SalesChart from "./SalesChart";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -78,7 +78,7 @@ const PointOfSales: React.FC = () => {
     ];
 
     return (
-        <div className="space-y-4">
+        <div className="p-6 space-y-4">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                 <h2 className="text-xl font-bold text-gray-800 text-center">{t("pointOfSales")}</h2>
             </motion.div>

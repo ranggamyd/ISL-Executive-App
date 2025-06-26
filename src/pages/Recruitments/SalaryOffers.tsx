@@ -11,11 +11,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Candidate as CandidateType } from "@/types/candidate";
 import { CheckCircle, ChevronDown, Eye, Filter, Search, X, XCircle } from "lucide-react";
 
-const Candidates = () => {
+const SalaryOffers = () => {
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState(false);
-    const [candidates, setCandidates] = useState<CandidateType[]>([]);
+    const [salaries, setSalaries] = useState<CandidateType[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const filterRef = useRef<HTMLDivElement>(null);
     const [filterOpen, setFilterOpen] = useState<boolean>(false);
@@ -32,21 +32,21 @@ const Candidates = () => {
     const [lightboxImage, setLightboxImage] = useState("");
     const [lightboxTitle, setLightboxTitle] = useState("");
 
-    const fetchCandidates = async (page = 1, append = false, searchTerm = "") => {
+    const fetchSalaries = async (page = 1, append = false, searchTerm = "") => {
         if (page === 1) setLoading(true);
 
         try {
-            const { data } = await API.get("recruitment/candidates", {
+            const { data } = await API.get("recruitment/salaries", {
                 params: { page, searchTerm, position: selectedPosition },
             });
 
             const candidatesList = data.data.data;
 
             if (candidatesList.length === 0) {
-                if (page === 1) setCandidates([]);
+                if (page === 1) setSalaries([]);
                 setHasMore(false);
             } else {
-                setCandidates(prev => (append ? [...prev, ...candidatesList] : candidatesList));
+                setSalaries(prev => (append ? [...prev, ...candidatesList] : candidatesList));
                 setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
@@ -59,13 +59,13 @@ const Candidates = () => {
     useEffect(() => {
         setPage(1);
         setHasMore(true);
-        fetchCandidates(1, false, debouncedSearch);
+        fetchSalaries(1, false, debouncedSearch);
     }, [debouncedSearch, selectedPosition]);
 
     const loadMore = () => {
         const nextPage = page + 1;
         setPage(nextPage);
-        fetchCandidates(nextPage, true, debouncedSearch);
+        fetchSalaries(nextPage, true, debouncedSearch);
     };
 
     useEffect(() => {
@@ -103,6 +103,14 @@ const Candidates = () => {
         setSelectedPosition("");
     };
 
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(amount);
+    };
+
     const calculateYOE = (months_of_experience: number) => {
         const months = months_of_experience;
         const years = Math.floor(months / 12);
@@ -112,7 +120,7 @@ const Candidates = () => {
         return `${years},${remainingMonths} years`;
     };
 
-    const handleCandidateAction = (candidate: CandidateType, action: "view" | "approve" | "reject") => {
+    const handleSalaryAction = (candidate: CandidateType, action: "view" | "approve" | "reject") => {
         if (action === "view") {
             const yoe = calculateYOE(candidate.months_of_experience);
 
@@ -121,7 +129,7 @@ const Candidates = () => {
             });
         } else {
             Swal.fire({
-                title: t(`confirm_${action}Candidate`),
+                title: t(`confirm_${action}Salary`),
                 confirmButtonText: t(action),
                 cancelButtonText: t("cancel"),
                 confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
@@ -131,7 +139,7 @@ const Candidates = () => {
                 if (result.isConfirmed) {
                     setLoading(true);
                     try {
-                        const { data } = await API.post(`recruitment/${action}Candidate`, {
+                        const { data } = await API.post(`recruitment/${action}Salary`, {
                             id: candidate.id,
                         });
 
@@ -163,7 +171,7 @@ const Candidates = () => {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
                 <div className="space-y-4">
                     {lightboxOpen && (
-                        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center" style={{ zIndex: 51 }} onClick={closeLightbox}>
+                        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closeLightbox}>
                             <div className="relative max-w-4xl max-h-[90vh] p-4">
                                 <button onClick={closeLightbox} className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold">
                                     <X size={32} />
@@ -179,7 +187,7 @@ const Candidates = () => {
                     )}
 
                     <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 mb-6">
-                        <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("candidateList")}</h2>
+                        <h2 className="text-xl font-bold text-gray-800 text-center mb-3 -mt-2">{t("salaryList")}</h2>
                         <div className="flex items-center space-x-4">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -220,10 +228,10 @@ const Candidates = () => {
                     {loading ? (
                         <ListSkeleton items={searchTerm ? 1 : 3} />
                     ) : (
-                        <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={candidates.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
-                            {candidates.map((candidate, index) => (
-                                <motion.div key={candidate.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                                    <div className="flex items-start justify-between mb-4">
+                        <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={salaries.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
+                            {salaries.map((candidate, index) => (
+                                <motion.div key={candidate.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                    <div className="flex items-start justify-between mb-3">
                                         <div className="flex items-center space-x-4">
                                             <img
                                                 src={import.meta.env.VITE_PUBLIC_URL + "recruitment/foto/" + candidate.foto_selfie}
@@ -235,7 +243,7 @@ const Candidates = () => {
                                                 }}
                                             />
                                             <div>
-                                                <h3 onClick={() => handleCandidateAction(candidate, "view")} className="font-semibold text-gray-900">
+                                                <h3 onClick={() => handleSalaryAction(candidate, "view")} className="font-semibold text-gray-900">
                                                     {candidate.nama_lengkap}
                                                 </h3>
                                                 <p className="text-sm text-gray-600">{candidate.jabatan.nama_jabatan}</p>
@@ -244,16 +252,25 @@ const Candidates = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex space-x-3">
-                                        <button onClick={() => handleCandidateAction(candidate, "view")} className="border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        <span className="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">
+                                            {t("candidate")}: {formatCurrency(candidate.salary_user)}
+                                        </span>
+                                        <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
+                                            {t("hrd")}: {candidate.offering_salary?.gaji_pokok ? formatCurrency(candidate.offering_salary.gaji_pokok) : "-"}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex justify-between space-x-3">
+                                        <button onClick={() => handleSalaryAction(candidate, "view")} className="border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                                             <Eye size={18} />
                                             <span className="text-xs hidden sm:block">{t("resume")}</span>
                                         </button>
-                                        <button onClick={() => handleCandidateAction(candidate, "reject")} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                                        <button onClick={() => handleSalaryAction(candidate, "reject")} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                                             <XCircle size={18} />
                                             <span className="text-xs">{t("reject")}</span>
                                         </button>
-                                        <button onClick={() => handleCandidateAction(candidate, "approve")} className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                                        <button onClick={() => handleSalaryAction(candidate, "approve")} className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                                             <CheckCircle size={18} />
                                             <span className="text-xs">{t("approve")}</span>
                                         </button>
@@ -263,7 +280,7 @@ const Candidates = () => {
                         </InfiniteScroll>
                     )}
 
-                    {candidates.length === 0 && !loading && (
+                    {salaries.length === 0 && !loading && (
                         <div className="text-center py-8 text-gray-500">
                             <Search size={48} className="mx-auto mb-4 text-gray-300" />
                             <p>{t("noDataFound")}</p>
@@ -275,4 +292,4 @@ const Candidates = () => {
     );
 };
 
-export default Candidates;
+export default SalaryOffers;

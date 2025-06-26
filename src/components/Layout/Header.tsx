@@ -88,7 +88,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10); // bisa disesuaikan threshold-nya
+            setIsScrolled(window.scrollY > 10);
         };
 
         window.addEventListener("scroll", handleScroll);
@@ -96,19 +96,18 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     }, []);
 
     return (
-        <header className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled ? "bg-white/75 dark:bg-gray-800/95 shadow-md backdrop-blur-lg border-b border-gray-200/50" : "bg-transparent border-none"}`}>
+        <header className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled ? "bg-white/50 shadow-md backdrop-blur-lg" : "bg-transparent border-none"}`}>
             <div className="flex items-center justify-between px-6 py-3">
                 <div className="flex items-center space-x-4">
                     <div>
-                        <h1 className={`text-xl font-bold text-gray-900 dark:text-white`}>{title}</h1>
+                        <h1 className={`text-xl font-bold transition-colors duration-300 ${isScrolled ? "text-gray-900" : "text-white drop-shadow-md"}`}>{title}</h1>
                     </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                    <SimpleThemeToggle />
+                <div className="flex items-center space-x-1">
                     <div className="relative" ref={langDropdownRef}>
-                        <button onClick={handleLanguageMenuToggle} className="p-2 hover:bg-gray-100 rounded-lg flex items-center space-x-1">
-                            <span className="text-sm font-medium text-gray-700">{languages.find(l => l.code === language)?.flag}</span>
+                        <button onClick={handleLanguageMenuToggle} className={`p-2 rounded-lg flex items-center space-x-1 transition-colors duration-300 ${isScrolled ? "hover:bg-gray-100" : "hover:bg-white/20 backdrop-blur-sm"}`}>
+                            <span className={`text-sm font-medium transition-colors duration-300 ${isScrolled ? "text-gray-700" : "text-white"}`}>{languages.find(l => l.code === language)?.flag}</span>
                         </button>
 
                         {showLangMenu && (
@@ -130,14 +129,18 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                         )}
                     </div>
 
+                    <div className={`transition-colors duration-300 ${isScrolled ? "" : "[&_.theme-toggle]:text-white [&_.theme-toggle]:hover:bg-white/20"}`}>
+                        <SimpleThemeToggle />
+                    </div>
+
                     <div className="relative" ref={avatarDropdownRef}>
-                        <button onClick={handleAvatarMenuToggle} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                        <button onClick={handleAvatarMenuToggle} className={`p-1 rounded-full transition-colors duration-300 ${isScrolled ? "hover:bg-gray-100" : "hover:bg-white/20 backdrop-blur-sm"}`}>
                             <img
                                 src={import.meta.env.VITE_PUBLIC_URL + "directorApp/avatars/" + user?.avatar}
                                 alt="Avatar"
-                                className="w-8 h-8 object-cover rounded-full border-2 border-gray-200 cursor-pointer"
+                                className={`w-8 h-8 object-cover rounded-full border-2 transition-colors duration-300 ${isScrolled ? "border-gray-200" : "border-white/50"} cursor-pointer`}
                                 onError={e => {
-                                    e.currentTarget.outerHTML = `<div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full border-2 border-gray-200 flex items-center justify-center text-white font-medium text-xs cursor-pointer">${user?.name.charAt(0)}</div>`;
+                                    e.currentTarget.outerHTML = `<div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full border-2 ${isScrolled ? "border-gray-200" : "border-white/50"} flex items-center justify-center text-white font-medium text-xs cursor-pointer">${user?.name.charAt(0)}</div>`;
                                 }}
                             />
                         </button>

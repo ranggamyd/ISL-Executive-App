@@ -268,7 +268,7 @@ const GpsView = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-2 shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>

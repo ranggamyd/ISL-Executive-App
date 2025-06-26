@@ -241,6 +241,9 @@ const translations = {
         pageNotFound: "Halaman Tidak Ditemukan",
         pageNotFoundDesc: "Halaman yang kamu cari tidak tersedia atau telah dipindahkan",
         backToHome: "Kembali ke Beranda",
+        recruitments: "Rekrutmen",
+        miscellaneous: "Lainnya",
+        welcomeBack: "Selamat Datang Kembali",
     },
 
     en: {
@@ -464,6 +467,9 @@ const translations = {
         pageNotFound: "Page Not Found",
         pageNotFoundDesc: "The page you are looking for is not available or has been moved",
         backToHome: "Back to Home",
+        recruitments: "Recruitments",
+        miscellaneous: "Misc",
+        welcomeBack: "Welcome Back",
     },
 
     zh: {
@@ -687,6 +693,9 @@ const translations = {
         pageNotFound: "页面未找到",
         pageNotFoundDesc: "您要找的页面不存在或已被移动",
         backToHome: "返回主页",
+        recruitments: "招聘",
+        miscellaneous: "杂项",
+        welcomeBack: "欢迎回来",
     },
 };
 

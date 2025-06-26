@@ -13,7 +13,7 @@ interface AuthContextType {
     user: User | null;
     token: string | null;
     menus: Menu[] | null;
-    permissions: Permission | null;
+    permissions: Permission[] | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState(null);
     const [menus, setMenus] = useState<Menu[] | null>(null);
-    const [permissions, setPermissions] = useState<Permission | null>(null);
+    const [permissions, setPermissions] = useState<Permission[] | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             localStorage.setItem("menus", JSON.stringify(responseData.menus));
             localStorage.setItem("permissions", JSON.stringify(responseData.permissions));
 
-            swal("success", responseData.message);
+            swal("success", response.data.message);
 
             return true;
         } catch (err: any) {
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setPermissions(responseData.permissions);
 
             localStorage.setItem("user", JSON.stringify(responseData.user));
-            localStorage.setItem("permissions", JSON.stringify(responseData.menus));
+            localStorage.setItem("menus", JSON.stringify(responseData.menus));
             localStorage.setItem("permissions", JSON.stringify(responseData.permissions));
         } catch (err: any) {
             swal("error", err.response.data.message);

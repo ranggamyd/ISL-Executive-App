@@ -10,7 +10,7 @@ import { ListSkeleton } from "@/components/Common/Skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { ChevronDown, Filter, Mail, Phone, Search, X } from "lucide-react";
 
-const Employee = () => {
+const Employees = () => {
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState(true);
@@ -154,7 +154,7 @@ const Employee = () => {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="p-6 space-y-4">
             {lightboxOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closeLightbox}>
                     <div className="relative max-w-4xl max-h-[90vh] p-4">
@@ -296,4 +296,4 @@ const Employee = () => {
     );
 };
 
-export default Employee;
+export default Employees;

@@ -9,6 +9,10 @@ import { CardSkeleton, StatSkeleton } from "@/components/Common/Skeleton";
 import { BarChart3, Filter, ChevronDown, UserPlus, Users, FileText, Coins, Wallet, DoorOpen, MapPin, DollarSign, FileBarChart2, ShoppingCart, Search } from "lucide-react";
 import { LucideIconMap } from "@/utils/dynamicIcon";
 import MenuDrawer from "@/components/Layout/MenuDrawer";
+import Candidates from "../Recruitments/Candidates";
+import DailyQuotes from "../Sales/DailyQuotes";
+import PointOfSales from "../Sales/PointOfSales";
+import SalesInReports from "../Sales/SalesInReports";
 
 const HomePage: React.FC = () => {
     const { t } = useLanguage();
@@ -24,13 +28,17 @@ const HomePage: React.FC = () => {
     const [limit, setLimit] = useState(6);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+    const [index, setIndex] = useState(0);
+    const [displayedText, setDisplayedText] = useState("");
+    const [charIndex, setCharIndex] = useState(0);
+
     useEffect(() => {
         const update = () => {
             const width = window.innerWidth;
             if (width >= 1024) {
                 setLimit(12);
             } else if (width >= 640) {
-                setLimit(8);
+                setLimit(10);
             } else {
                 setLimit(6);
             }
@@ -40,6 +48,35 @@ const HomePage: React.FC = () => {
         window.addEventListener("resize", update);
         return () => window.removeEventListener("resize", update);
     }, []);
+
+    // Function to get greeting based on time
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+
+        if (hour >= 5 && hour < 11) return t("greeting_morning");
+        if (hour >= 11 && hour < 15) return t("greeting_afternoon");
+        if (hour >= 15 && hour < 18) return t("greeting_evening");
+        return t("greeting_night");
+    };
+    const texts = [t("welcomeBack") + ", " + user?.name, t("welcomeMessage")];
+
+    useEffect(() => {
+        const currentString = texts[index];
+        const typing = setTimeout(() => {
+            setDisplayedText(currentString.slice(0, charIndex + 1));
+            setCharIndex(charIndex + 1);
+        }, 5);
+
+        if (charIndex === currentString.length) {
+            clearTimeout(typing);
+            setTimeout(() => {
+                setCharIndex(0);
+                setIndex(prev => (prev + 1) % texts.length);
+            }, 1500); // delay before switching to next text
+        }
+
+        return () => clearTimeout(typing);
+    }, [charIndex, index, texts]);
 
     const showAllButton = {
         id: "allMenus",
@@ -54,62 +91,66 @@ const HomePage: React.FC = () => {
 
     return (
         <>
-            <div className="p-6 space-y-4">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                </div>
+            <div className="p-6 space-y-6">
+                {/* Greeting Section */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-1">{getGreeting()}!</h2>
+                    <motion.p key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="text-white/80 text-base h-6">
+                        {displayedText}
+                    </motion.p>
+                </motion.div>
 
-                {loading ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                        {Array.from({ length: 6 }).map((_, index) => (
-                            <CardSkeleton key={index} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                        {limitedMenus.map(menu => {
-                            const iconName = menu.icon as keyof typeof LucideIconMap;
-                            const Icon = LucideIconMap[iconName] as React.ElementType;
-                            const theme = menu.theme || "gray";
+                {/* Search Section */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
+                    <Search className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" />
+                </motion.div>
 
-                            return (
-                                <motion.button
-                                    key={menu.id}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className={`
-                                    group flex flex-col items-center justify-center gap-2
-                                    p-4 rounded-2xl shadow border transition-all duration-300
-                                    border-${theme}-100 hover:shadow-md hover:from-${theme}-100 hover:to-white
-                                `}
-                                    onClick={() => {
-                                        if (menu.id === "allMenus") {
-                                            setIsDrawerOpen(true);
-                                        } else {
-                                            navigate(`/${menu.path}`);
-                                        }
-                                    }}
-                                >
-                                    {Icon && (
-                                        <div
-                                            className={`
-                                                flex items-center justify-center w-12 h-12 rounded-full
-                                                bg-gradient-to-br from-${theme}-50 to-${theme}-100 border border-${theme}-300
-                                                group-hover:scale-110 transition-transform duration-300
-                                            `}
-                                        >
-                                            <Icon size={22} className={`text-${theme}-700`} />
+                {/* Menu Grid */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
+                    {loading ? (
+                        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-10 gap-4">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <CardSkeleton key={index} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-4">
+                            {limitedMenus.map((menu, index) => {
+                                const iconName = menu.icon as keyof typeof LucideIconMap;
+                                const Icon = LucideIconMap[iconName] as React.ElementType;
+
+                                return (
+                                    <motion.button
+                                        key={menu.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.4, delay: 0.5 + index * 0.05 }}
+                                        whileHover={{ scale: 1.08 }}
+                                        whileTap={{ scale: 0.96 }}
+                                        className="group flex flex-col items-center justify-center gap-2 p-3 rounded-2xl shadow-sm bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:from-blue-50 hover:to-white hover:border-blue-200 transition-all duration-300"
+                                        onClick={() => {
+                                            if (menu.id === "allMenus") {
+                                                setIsDrawerOpen(true);
+                                            } else {
+                                                navigate(`/${menu.path}`);
+                                            }
+                                        }}
+                                    >
+                                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-blue-100 via-white to-purple-100 border border-blue-200 shadow-sm group-hover:shadow-md transition-all duration-300">
+                                            <Icon size={18} className="text-blue-600 group-hover:text-purple-600 transition-colors duration-300" />
                                         </div>
-                                    )}
-
-                                    <p className={`text-sm font-semibold text-${theme}-800 text-center truncate`}>{t(menu.name)}</p>
-                                </motion.button>
-                            );
-                        })}
-                    </div>
-                )}
+                                        <p className="text-xs font-semibold text-center text-gray-700 group-hover:text-blue-700 transition-all duration-300 truncate w-full">{t(menu.name)}</p>
+                                    </motion.button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </motion.div>
             </div>
+
+            <SalesInReports />
+            <Candidates />
 
             <MenuDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
         </>

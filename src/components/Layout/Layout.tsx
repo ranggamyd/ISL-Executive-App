@@ -1,25 +1,24 @@
 import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
-import { useAuth } from "@/contexts/AuthContext";
+import { Outlet } from "react-router-dom";
 import BottomNavigation from "./BottomNavigation";
 
 export const Layout: React.FC = () => {
-    const { user } = useAuth();
-
-    const location = useLocation();
-
-    if (!user || location.pathname.includes("/auth")) return <Outlet />;
-
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Header title="ISL Executive App" />
+        <div className="min-h-screen bg-gray-50 relative">
+            <div className="absolute top-0 left-0 right-0 h-72 bg-gradient-to-br from-blue-600 via-blue-400 to-purple-600" />
+            <div className="absolute top-0 left-0 right-0 h-72 bg-gradient-to-r from-transparent via-white/10 to-transparent z-[1]" />
+            <div className="absolute top-48 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-gray-50 z-[1]" />
 
-            <main className="pb-32 pt-0">
-                <Outlet />
-            </main>
+            <div className="relative z-10">
+                <Header title="ISL Executive App" />
 
-            <BottomNavigation />
+                <main className="pb-12 pt-0">
+                    <Outlet />
+                </main>
+
+                <BottomNavigation />
+            </div>
         </div>
     );
 };

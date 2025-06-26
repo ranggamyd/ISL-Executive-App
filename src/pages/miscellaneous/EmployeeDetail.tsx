@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Employee, Education, Experience, Language, Organization, Skill, Certificate } from "@/types/employee";
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, X, IdCard, User, Building2, Award, Globe, BookOpen, Heart, Shield, Clock, Badge, Users } from "lucide-react";
 
-export const Detail: React.FC = () => {
+export const EmployeeDetail: React.FC = () => {
     const { t } = useLanguage();
 
     const navigate = useNavigate();
