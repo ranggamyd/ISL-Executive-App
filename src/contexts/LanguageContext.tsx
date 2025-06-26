@@ -254,6 +254,7 @@ const translations = {
         light: "Terang",
         dark: "Gelap",
         system: "Sistem",
+        close: "Tutup"
     },
 
     en: {
@@ -490,6 +491,7 @@ const translations = {
         light: "Light",
         dark: "Dark",
         system: "System",
+        close: "Close"
     },
 
     zh: {
@@ -726,6 +728,7 @@ const translations = {
         light: "浅色",
         dark: "深色",
         system: "系统",
+        close: "关"
     },
 };
 
