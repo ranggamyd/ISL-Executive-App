@@ -15,12 +15,7 @@ export default function Sales() {
     const navigate = useNavigate();
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [viewMode, setViewMode] = useState<"card" | "list">("card");
-
-    useEffect(() => {
-        const stored = localStorage.getItem("drawerViewMode");
-        if (stored === "list" || stored === "card") setViewMode(stored);
-    }, []);
+    const [viewMode, setViewMode] = useState(localStorage.getItem("drawerViewMode") || "card");
 
     useEffect(() => {
         localStorage.setItem("drawerViewMode", viewMode);
@@ -28,7 +23,7 @@ export default function Sales() {
 
     const filtered = useMemo(() => {
         if (!searchTerm) return menus;
-        return menus.filter(m => t(m.name).toLowerCase().includes(searchTerm.toLowerCase()));
+        return menus.filter((m) => t(m.name).toLowerCase().includes(searchTerm.toLowerCase()));
     }, [menus, searchTerm, t]);
 
     const grouped = useMemo(() => {
@@ -47,7 +42,7 @@ export default function Sales() {
                 {/* Search */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
                     <Search className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" />
+                    <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" />
                 </motion.div>
 
                 {/* Grouped Menus */}
@@ -73,7 +68,7 @@ export default function Sales() {
                             </div>
 
                             <div className={viewMode === "card" ? "grid grid-cols-2 sm:grid-cols-3 gap-3" : "space-y-2"}>
-                                {items.map(menu => {
+                                {items.map((menu) => {
                                     const iconName = menu.icon as keyof typeof LucideIconMap;
                                     const Icon = LucideIconMap[iconName] as React.ElementType;
 

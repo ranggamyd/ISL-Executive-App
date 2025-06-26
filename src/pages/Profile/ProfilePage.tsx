@@ -4,16 +4,32 @@ import swal from "@/utils/swal";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import React, { useEffect, useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { User, Mail, Phone, Edit3, Camera, Settings, Bell, Shield, LogOut, ChevronRight, X, AtSign, IdCard, Lock, Eye, EyeOff } from "lucide-react";
+import { useLanguage, type Language } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { User, Mail, Phone, Edit3, Camera, Settings, Bell, Shield, LogOut, ChevronRight, X, AtSign, IdCard, Lock, Eye, EyeOff, Globe, Palette, Sun, Moon, MonitorCog } from "lucide-react";
+
+const languages = [
+    { code: "en" as Language, name: "English", flag: "🇺🇸" },
+    { code: "id" as Language, name: "Indonesian", flag: "🇮🇩" },
+    { code: "zh" as Language, name: "Chinese", flag: "🇨🇳" },
+];
+
+const themes = [
+    { key: "light", icon: Sun, label: "Light" },
+    { key: "dark", icon: Moon, label: "Dark" },
+    { key: "system", icon: MonitorCog, label: "System" },
+];
 
 const ProfilePage: React.FC = () => {
     const { t } = useLanguage();
+    const { language, setLanguage } = useLanguage();
+    const { theme, setTheme } = useTheme();
 
     const { user, refresh, logout } = useAuth();
 
     const [isEditing, setIsEditing] = useState(false);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [isAppPreferencesOpen, setIsAppPreferencesOpen] = useState(false);
     const [showPasswords, setShowPasswords] = useState({
         current: false,
         new: false,
@@ -49,7 +65,7 @@ const ProfilePage: React.FC = () => {
                 { icon: Lock, label: t("changePassword"), action: () => setIsChangingPassword(true) },
                 { icon: Bell, label: t("notifications"), action: () => {} },
                 { icon: Shield, label: t("privacyAndSecurity"), action: () => {} },
-                { icon: Settings, label: t("appPreferences"), action: () => {} },
+                { icon: Settings, label: t("appPreferences"), action: () => setIsAppPreferencesOpen(true) },
             ],
         },
         {
@@ -102,9 +118,8 @@ const ProfilePage: React.FC = () => {
                 confirmPassword: "",
             });
         } catch (err: any) {
-            console.log({ err });
             if (err.response.data?.errors) {
-                Object.keys(err.response.data.errors).forEach(key => {
+                Object.keys(err.response.data.errors).forEach((key) => {
                     swal("error", err.response.data.errors[key]);
                 });
             } else if (err.response.data?.message) {
@@ -116,7 +131,7 @@ const ProfilePage: React.FC = () => {
     };
 
     const togglePasswordVisibility = (field: "current" | "new" | "confirm") => {
-        setShowPasswords(prev => ({
+        setShowPasswords((prev) => ({
             ...prev,
             [field]: !prev[field],
         }));
@@ -135,7 +150,7 @@ const ProfilePage: React.FC = () => {
             denyButtonText: t("logout"),
             cancelButtonText: t("cancel"),
             reverseButtons: true,
-        }).then(result => {
+        }).then((result) => {
             if (result.isDenied) logout();
         });
     };
@@ -160,7 +175,7 @@ const ProfilePage: React.FC = () => {
                         <button onClick={closeLightbox} className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold">
                             <X size={32} />
                         </button>
-                        <img src={lightboxImage} alt={lightboxTitle} className="max-w-full max-h-full object-contain rounded-lg" onClick={e => e.stopPropagation()} />
+                        <img src={lightboxImage} alt={lightboxTitle} className="max-w-full max-h-full object-contain rounded-lg" onClick={(e) => e.stopPropagation()} />
                         {lightboxTitle && (
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
                                 <h3 className="text-lg font-semibold">{lightboxTitle}</h3>
@@ -181,7 +196,7 @@ const ProfilePage: React.FC = () => {
                                 type="file"
                                 accept="image/*"
                                 className="hidden"
-                                onChange={e => {
+                                onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
                                         setFormData({ ...formData, avatar: file });
@@ -192,12 +207,12 @@ const ProfilePage: React.FC = () => {
                             />
                         </label>
                     </div>
-                    <div className="flex-1">
-                        <h2 className="text-xl font-bold mb-1">{user?.name}</h2>
-                        <p className="text-blue-100 mb-0">{user?.username}</p>
-                        <p className="text-blue-200 text-sm">{user?.email}</p>
+                    <div className="flex-1 min-w-0">
+                        <h2 className="text-xl font-bold mb-1 truncate">{user?.name}</h2>
+                        <p className="text-blue-100 mb-0 truncate">{user?.username}</p>
+                        <p className="text-blue-200 text-sm truncate">{user?.email}</p>
                     </div>
-                    <button onClick={() => setIsEditing(true)} className="p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors">
+                    <button onClick={() => setIsEditing(true)} className="p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors flex-shrink-0">
                         <Edit3 size={20} />
                     </button>
                 </div>
@@ -277,24 +292,24 @@ const ProfilePage: React.FC = () => {
             {/* Edit Profile Modal */}
             {isEditing && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ marginTop: 0, zIndex: 51 }} onClick={() => setIsEditing(false)}>
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("editProfile")}</h3>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("fullName")}</label>
-                                <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("username")}</label>
-                                <input type="text" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="text" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("emailAddress")}</label>
-                                <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("phoneNumber")}</label>
-                                <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
                         </div>
                         <div className="flex space-x-4 mt-6">
@@ -312,7 +327,7 @@ const ProfilePage: React.FC = () => {
             {/* Change Password Modal */}
             {isChangingPassword && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ marginTop: 0, zIndex: 51 }} onClick={() => setIsChangingPassword(false)}>
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center space-x-3 mb-4">
                             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                                 <Lock size={18} className="text-red-600" />
@@ -324,7 +339,7 @@ const ProfilePage: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("currentPassword")}</label>
                                 <div className="relative">
-                                    <input type={showPasswords.current ? "text" : "password"} value={passwordData.currentPassword} onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="••••••••" required />
+                                    <input type={showPasswords.current ? "text" : "password"} value={passwordData.currentPassword} onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="••••••••" required />
                                     <button type="button" onClick={() => togglePasswordVisibility("current")} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                         {showPasswords.current ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
@@ -334,7 +349,7 @@ const ProfilePage: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("newPassword")}</label>
                                 <div className="relative">
-                                    <input type={showPasswords.new ? "text" : "password"} value={passwordData.newPassword} onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="••••••••" required />
+                                    <input type={showPasswords.new ? "text" : "password"} value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="••••••••" required />
                                     <button type="button" onClick={() => togglePasswordVisibility("new")} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                         {showPasswords.new ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
@@ -344,7 +359,7 @@ const ProfilePage: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">{t("confirmNewPassword")}</label>
                                 <div className="relative">
-                                    <input type={showPasswords.confirm ? "text" : "password"} value={passwordData.confirmPassword} onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="••••••••" required />
+                                    <input type={showPasswords.confirm ? "text" : "password"} value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="••••••••" required />
                                     <button type="button" onClick={() => togglePasswordVisibility("confirm")} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                         {showPasswords.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
@@ -368,6 +383,75 @@ const ProfilePage: React.FC = () => {
                             </button>
                             <button onClick={handleChangePassword} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                                 {t("changePassword")}
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+
+            {/* App Preferences Modal */}
+            {isAppPreferencesOpen && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ marginTop: 0, zIndex: 51 }} onClick={() => setIsAppPreferencesOpen(false)}>
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center space-x-3 mb-6">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <Settings size={18} className="text-blue-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900">{t("appPreferences")}</h3>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div>
+                                <div className="flex items-center space-x-3 mb-3">
+                                    <Globe size={18} className="text-gray-600" />
+                                    <label className="text-sm font-medium text-gray-700">{t("language")}</label>
+                                </div>
+                                <div className="space-y-2">
+                                    {languages.map((lang) => (
+                                        <button key={lang.code} onClick={() => setLanguage(lang.code)} className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors ${language === lang.code ? "border-blue-500 bg-blue-50 text-blue-600" : "border-gray-200 hover:bg-gray-50 text-gray-700"}`}>
+                                            <div className="flex items-center space-x-3">
+                                                <span className="text-lg">{lang.flag}</span>
+                                                <span className="text-sm font-medium">{t(lang.name.toLowerCase())}</span>
+                                            </div>
+                                            {language === lang.code && (
+                                                <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="flex items-center space-x-3 mb-3">
+                                    <Palette size={18} className="text-gray-600" />
+                                    <label className="text-sm font-medium text-gray-700">{t("theme")}</label>
+                                </div>
+                                <div className="space-y-2">
+                                    {themes.map((themeOption) => {
+                                        const Icon = themeOption.icon;
+                                        return (
+                                            <button key={themeOption.key} onClick={() => setTheme(themeOption.key as any)} className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors ${theme === themeOption.key ? "border-blue-500 bg-blue-50 text-blue-600" : "border-gray-200 hover:bg-gray-50 text-gray-700"}`}>
+                                                <div className="flex items-center space-x-3">
+                                                    <Icon size={18} />
+                                                    <span className="text-sm font-medium">{t(themeOption.label.toLowerCase())}</span>
+                                                </div>
+                                                {theme === themeOption.key && (
+                                                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end mt-6">
+                            <button onClick={() => setIsAppPreferencesOpen(false)} className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium transition-colors">
+                                {t("close") || "Close"}
                             </button>
                         </div>
                     </motion.div>

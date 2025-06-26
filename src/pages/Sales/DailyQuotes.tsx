@@ -217,8 +217,8 @@ const DailyQuotes: React.FC = () => {
                             <div className="flex items-start justify-between mb-4 sm:mb-1">
                                 <div className="flex items-center space-x-4">
                                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold cursor-default">{recap.sales_name.charAt(0)}</div>
-                                    <div>
-                                        <h3 className="font-semibold text-gray-900 sm:mb-1">{recap.sales_name}</h3>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-semibold text-gray-900 sm:mb-1 truncate">{recap.sales_name}</h3>
                                         <div className="space-y-0">
                                             <p className="text-sm text-gray-600 flex items-center">
                                                 <small className="font-semibold text-xs sm:text-sm text-gray-700 w-20">{t("supervisor")}</small>

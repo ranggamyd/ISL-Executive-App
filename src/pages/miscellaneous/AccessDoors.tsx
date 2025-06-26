@@ -202,12 +202,12 @@ const AccessDoors = () => {
                 <InfiniteScroll className="space-y-4 mb-3" style={{ overflow: "hidden !important" }} dataLength={accessLogs.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                     {accessLogs.map((log, index) => (
                         <motion.div key={log.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-4 flex-1 min-w-0">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${log.status === "Access diTerima" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
                                     <DoorOpen size={18} />
                                 </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">{log.karyawan?.nama_lengkap}</p>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-gray-900 truncate">{log.karyawan?.nama_lengkap}</p>
                                     <p className="text-sm text-gray-600">{log.device?.nama_device}</p>
                                 </div>
                             </div>

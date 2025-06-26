@@ -1,23 +1,20 @@
-import API from "@/lib/api";
-import swal from "@/utils/swal";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import React, { useState, useEffect, useRef } from "react";
-import { CardSkeleton, StatSkeleton } from "@/components/Common/Skeleton";
-import { BarChart3, Filter, ChevronDown, UserPlus, Users, FileText, Coins, Wallet, DoorOpen, MapPin, DollarSign, FileBarChart2, ShoppingCart, Search } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CardSkeleton } from "@/components/Common/Skeleton";
+import { Search } from "lucide-react";
 import { LucideIconMap } from "@/utils/dynamicIcon";
 import MenuDrawer from "@/components/Layout/MenuDrawer";
 import Candidates from "../Recruitments/Candidates";
-import DailyQuotes from "../Sales/DailyQuotes";
-import PointOfSales from "../Sales/PointOfSales";
 import SalesInReports from "../Sales/SalesInReports";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 const HomePage: React.FC = () => {
     const { t } = useLanguage();
 
-    const { user, menus, permissions } = useAuth();
+    const { user, menus } = useAuth();
 
     const navigate = useNavigate();
 
@@ -31,6 +28,8 @@ const HomePage: React.FC = () => {
     const [index, setIndex] = useState(0);
     const [displayedText, setDisplayedText] = useState("");
     const [charIndex, setCharIndex] = useState(0);
+
+    const { canAccess } = useUserAccess();
 
     useEffect(() => {
         const update = () => {
@@ -71,7 +70,7 @@ const HomePage: React.FC = () => {
             clearTimeout(typing);
             setTimeout(() => {
                 setCharIndex(0);
-                setIndex(prev => (prev + 1) % texts.length);
+                setIndex((prev) => (prev + 1) % texts.length);
             }, 1500); // delay before switching to next text
         }
 
@@ -103,7 +102,7 @@ const HomePage: React.FC = () => {
                 {/* Search Section */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
                     <Search className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" />
+                    <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t("search") + "..."} className="w-full pl-12 pe-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white/95 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" />
                 </motion.div>
 
                 {/* Menu Grid */}
@@ -149,8 +148,8 @@ const HomePage: React.FC = () => {
                 </motion.div>
             </div>
 
-            <SalesInReports />
-            <Candidates />
+            {canAccess("salesInReports", "view") && <SalesInReports />}
+            {canAccess("candidates", "view") && <Candidates />}
 
             <MenuDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
         </>

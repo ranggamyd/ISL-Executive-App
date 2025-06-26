@@ -7,13 +7,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Candidate, Certificate, Education, Experience, Language, Organization, Skill } from "@/types/candidate";
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, X, Clock, Award, MessageSquare, VenusAndMars, Medal, IdCard, Globe, Building2, ScrollText, ThumbsUp, ThumbsDown, XCircle, CheckCircle } from "lucide-react";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
-export const CandidateDetail: React.FC = () => {
+export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candidate; yoe: string; onClose: () => void }) => {
     const { t } = useLanguage();
 
     const navigate = useNavigate();
 
-    const { candidate, yoe } = useLocation().state as { candidate: Candidate; yoe: string };
+    const { canAccess } = useUserAccess();
+
+    // const { candidate, yoe } = useLocation().state as { candidate: Candidate; yoe: string };
 
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxImage, setLightboxImage] = useState("");
@@ -63,7 +66,7 @@ export const CandidateDetail: React.FC = () => {
             confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
             showCancelButton: true,
             reverseButtons: true,
-        }).then(async result => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     const { data } = await API.post(`recruitment/${endpoint}`, {
@@ -99,7 +102,7 @@ export const CandidateDetail: React.FC = () => {
                         <button onClick={closeLightbox} className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold">
                             <X size={32} />
                         </button>
-                        <img src={lightboxImage} alt={lightboxTitle} className="max-w-full max-h-full object-contain rounded-lg" onClick={e => e.stopPropagation()} />
+                        <img src={lightboxImage} alt={lightboxTitle} className="max-w-full max-h-full object-contain rounded-lg" onClick={(e) => e.stopPropagation()} />
                         {lightboxTitle && (
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
                                 <h3 className="text-lg font-semibold">{lightboxTitle}</h3>
@@ -110,7 +113,7 @@ export const CandidateDetail: React.FC = () => {
             )}
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
-                <div onClick={() => navigate(-1)} className="flex items-center space-x-2">
+                <div onClick={onClose} className="flex items-center space-x-2">
                     <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                         <ArrowLeft size={18} className="text-gray-800" />
                     </button>
@@ -118,14 +121,18 @@ export const CandidateDetail: React.FC = () => {
                 </div>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex space-x-4">
-                    <button onClick={() => handleCandidateAction("reject")} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm">
-                        <XCircle size={18} />
-                        <span className="text-xs">{t("reject")}</span>
-                    </button>
-                    <button onClick={() => handleCandidateAction("approve")} className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm">
-                        <CheckCircle size={18} />
-                        <span className="text-xs">{t("approve")}</span>
-                    </button>
+                    {canAccess(candidate.status === "APPROVE INTERVIEW HRD" ? "candidates" : "salaryOffers", "reject") && (
+                        <button onClick={() => handleCandidateAction("reject")} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm">
+                            <XCircle size={18} />
+                            <span className="text-xs">{t("reject")}</span>
+                        </button>
+                    )}
+                    {canAccess(candidate.status === "APPROVE INTERVIEW HRD" ? "candidates" : "salaryOffers", "approve") && (
+                        <button onClick={() => handleCandidateAction("approve")} className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm">
+                            <CheckCircle size={18} />
+                            <span className="text-xs">{t("approve")}</span>
+                        </button>
+                    )}
                 </motion.div>
             </motion.div>
 
@@ -137,7 +144,7 @@ export const CandidateDetail: React.FC = () => {
                             alt="Candidate Avatar"
                             className="w-20 h-20 rounded-full object-cover cursor-pointer hover:opacity-75 transition-opacity"
                             onClick={() => openLightbox(import.meta.env.VITE_PUBLIC_URL + "recruitment/foto/" + candidate.foto_selfie, candidate.nama_lengkap)}
-                            onError={e => {
+                            onError={(e) => {
                                 e.currentTarget.outerHTML = `<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">${candidate.nama_lengkap.charAt(0)}</div>`;
                             }}
                         />

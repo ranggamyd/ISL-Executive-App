@@ -15,12 +15,7 @@ export default function Recruitments() {
     const navigate = useNavigate();
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [viewMode, setViewMode] = useState<"card" | "list">("card");
-
-    useEffect(() => {
-        const stored = localStorage.getItem("drawerViewMode");
-        if (stored === "list" || stored === "card") setViewMode(stored);
-    }, []);
+    const [viewMode, setViewMode] = useState(localStorage.getItem("drawerViewMode") || "card");
 
     useEffect(() => {
         localStorage.setItem("drawerViewMode", viewMode);

@@ -5,7 +5,7 @@ export const useUserAccess = () => {
 
     const canAccess = (menu: string, access: string = "view"): boolean => {
         if (!permissions) return false;
-        const found = permissions.find(p => p.menu === menu);
+        const found = permissions.find((p) => p.menu === menu);
         return found?.access.includes(access) ?? false;
     };
 

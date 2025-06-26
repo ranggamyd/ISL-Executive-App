@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, []);
 
     const login = async (credential: string, password: string): Promise<boolean> => {
-        setLoading(true);
+        // setLoading(true);
 
         try {
             const response = await API.post("login", { credential, password });
@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             return false;
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     };
 

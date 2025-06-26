@@ -16,11 +16,33 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import LoadingScreen from "./components/Common/LoadingScreen";
 
 const AppRouter: React.FC = () => {
-    const { user, menus, permissions, loading } = useAuth();
+    const { user, menus, loading } = useAuth();
 
     const { canAccess } = useUserAccess();
 
     if (loading) return <LoadingScreen />;
+
+    const routeConfigs: {
+        key: string;
+        path: string;
+        component: React.LazyExoticComponent<React.ComponentType<any>>;
+        protected: boolean;
+        permissionName?: string; // optional, cuma dipake kalo protected
+    }[] = [
+        ...[...new Set((menus ?? []).map((m) => m.group))].map((group) => ({
+            key: `group-${group}`,
+            path: `/${group}`,
+            component: lazyImport(group),
+            protected: false,
+        })),
+        ...(menus ?? []).map((menu) => ({
+            key: `menu-${menu.id}`,
+            path: menu.path,
+            component: lazyImport(menu.path),
+            protected: true,
+            permissionName: menu.name,
+        })),
+    ];
 
     return (
         <Router basename="/exec/" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -30,32 +52,24 @@ const AppRouter: React.FC = () => {
                 <Route path="/" element={!user ? <Navigate to="/login" replace /> : <Layout />}>
                     <Route index element={<HomePage />} />
                     <Route path="/dashboard" element={<HomePage />} />
-                    {[...(menus ?? []).map(menu => menu.path), ...[...new Set((menus ?? []).map(menu => menu.group))].filter(group => !menus?.some(menu => menu.path === group))].map(routePath => {
-                        const LazyComponent = lazyImport(routePath);
 
-                        const menuKey = routePath.split("/").pop() || "";
-
-                        const isProtected = permissions?.some(p => p.menu === menuKey);
-                        const isAllowed = !isProtected || canAccess(menuKey, "view");
-
-                        return (
-                            <Route
-                                key={routePath}
-                                path={routePath}
-                                element={
-                                    !isAllowed ? (
-                                        <Forbidden />
-                                    ) : (
-                                        <ErrorBoundary>
-                                            <Suspense fallback={<LoadingScreen />}>
-                                                <LazyComponent />
-                                            </Suspense>
-                                        </ErrorBoundary>
-                                    )
-                                }
-                            />
-                        );
-                    })}
+                    {routeConfigs.map(({ key, path, component: Component, protected: isProtected, permissionName }) => (
+                        <Route
+                            key={key}
+                            path={path}
+                            element={
+                                isProtected && !canAccess(permissionName!, "view") ? (
+                                    <Forbidden />
+                                ) : (
+                                    <ErrorBoundary>
+                                        <Suspense fallback={<LoadingScreen />}>
+                                            <Component />
+                                        </Suspense>
+                                    </ErrorBoundary>
+                                )
+                            }
+                        />
+                    ))}
 
                     <Route path="/profile" element={<ProfilePage />} />
 
