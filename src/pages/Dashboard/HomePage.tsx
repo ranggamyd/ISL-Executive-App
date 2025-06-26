@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
             setTimeout(() => {
                 setCharIndex(0);
                 setIndex((prev) => (prev + 1) % texts.length);
-            }, 1500); // delay before switching to next text
+            }, 3000); // delay before switching to next text
         }
 
         return () => clearTimeout(typing);
