@@ -64,7 +64,7 @@ const HomePage: React.FC = () => {
         const typing = setTimeout(() => {
             setDisplayedText(currentString.slice(0, charIndex + 1));
             setCharIndex(charIndex + 1);
-        }, 50);
+        }, 25);
 
         if (charIndex === currentString.length) {
             clearTimeout(typing);
