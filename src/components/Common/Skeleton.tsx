@@ -11,7 +11,7 @@ interface SkeletonProps {
 const Skeleton: React.FC<SkeletonProps> = ({ width = "w-full", height = "h-4", className = "", circle = false }) => {
     return (
         <motion.div
-            className={`bg-gray-200 ${circle ? "rounded-full" : "rounded"} ${width} ${height} ${className}`}
+            className={`bg-gray-200 dark:bg-gray-700 ${circle ? "rounded-full" : "rounded"} ${width} ${height} ${className}`}
             animate={{
                 opacity: [0.5, 1, 0.5],
             }}
@@ -25,7 +25,7 @@ const Skeleton: React.FC<SkeletonProps> = ({ width = "w-full", height = "h-4", c
 };
 
 export const CardSkeleton: React.FC = () => (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-4 mb-4">
             <Skeleton width="w-12" height="h-12" circle />
             <div className="flex-1">
@@ -43,7 +43,7 @@ export const CardSkeleton: React.FC = () => (
 export const ListSkeleton: React.FC<{ items?: number }> = ({ items = 5 }) => (
     <div className="space-y-4">
         {Array.from({ length: items }).map((_, index) => (
-            <div key={index} className="flex items-center space-x-4 p-4 bg-white rounded-xl border border-gray-100">
+            <div key={index} className="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                 <Skeleton width="w-12" height="h-12" circle />
                 <div className="flex-1">
                     <Skeleton width="w-3/4" height="h-4" className="mb-2" />
@@ -56,12 +56,12 @@ export const ListSkeleton: React.FC<{ items?: number }> = ({ items = 5 }) => (
 );
 
 export const StatSkeleton: React.FC = () => (
-    <div className={`bg-gradient-to-br from-gray-300 to-gray-600 rounded-xl p-4 text-white`}>
+    <div className={`bg-gradient-to-br from-gray-300 to-gray-600 dark:from-gray-600 dark:to-gray-800 rounded-xl p-4 text-white`}>
         <div className="flex flex-col items-center justify-between">
-            <Skeleton width="w-6" height="h-6" className="bg-white/20" />
+            <Skeleton width="w-6" height="h-6" className="bg-white/20 dark:bg-gray-500/20" />
             <div className="text-center mt-2 md:text-end">
-                <Skeleton width="w-20" height="h-2" className="bg-white/20 mb-2" />
-                <Skeleton width="w-20" height="h-2" className="bg-white/20 mb-2" />
+                <Skeleton width="w-20" height="h-2" className="bg-white/20 dark:bg-gray-500/20 mb-2" />
+                <Skeleton width="w-20" height="h-2" className="bg-white/20 dark:bg-gray-500/20 mb-2" />
             </div>
         </div>
     </div>

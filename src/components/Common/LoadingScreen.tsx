@@ -17,7 +17,7 @@ const LoadingScreen = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-gray-900 z-50">
             <div className="flex space-x-2">
                 {[0, 1, 2].map(i => (
-                    <motion.span key={i} className="w-4 h-4 bg-primary rounded-full bg-blue-500" custom={i} variants={dotVariants} animate="bounce" />
+                    <motion.span key={i} className="w-4 h-4 bg-primary rounded-full bg-blue-500 dark:bg-blue-400" custom={i} variants={dotVariants} animate="bounce" />
                 ))}
             </div>
         </div>

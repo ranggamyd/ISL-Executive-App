@@ -20,7 +20,7 @@ const Forbidden = () => {
                 {t("forbiddenDesc")}
             </motion.p>
 
-            <motion.button onClick={() => navigate("/")} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+            <motion.button onClick={() => navigate("/")} className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
                 <Home size={18} />
                 <span>{t("backToHome")}</span>
             </motion.button>
