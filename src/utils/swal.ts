@@ -1,7 +1,7 @@
 import Swal, { SweetAlertIcon, SweetAlertTheme } from "sweetalert2";
 
 const swal = (icon: SweetAlertIcon, title: string, text?: string) => {
-    const theme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
+    const theme = document.documentElement.classList.contains('dark') ? "dark" : "light";
 
     return Swal.mixin({
         theme: theme as SweetAlertTheme,

@@ -127,7 +127,7 @@ const DailyQuotes: React.FC = () => {
     ];
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("recapDailyQuotes")}</h2>
                 <div className="flex items-center space-x-4">
@@ -213,20 +213,20 @@ const DailyQuotes: React.FC = () => {
             ) : (
                 <div className="grid gap-4">
                     {filteredQuotes.map((recap, index) => (
-                        <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 sm:flex sm:justify-between mb-4">
+                        <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 sm:flex sm:justify-between mb-4">
                             <div className="flex items-start justify-between mb-4 sm:mb-1">
                                 <div className="flex items-center space-x-4">
                                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold cursor-default">{recap.sales_name.charAt(0)}</div>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-gray-900 sm:mb-1 truncate">{recap.sales_name}</h3>
+                                        <h3 className="font-semibold text-gray-900 dark:text-white sm:mb-1 truncate">{recap.sales_name}</h3>
                                         <div className="space-y-0">
-                                            <p className="text-sm text-gray-600 flex items-center">
-                                                <small className="font-semibold text-xs sm:text-sm text-gray-700 w-20">{t("supervisor")}</small>
-                                                <small className="truncate text-xs sm:text-sm">: {recap.supervisor.nama_lengkap !== recap.sales_name ? recap.supervisor.nama_lengkap : "-"}</small>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
+                                                <small className="font-semibold text-xs sm:text-sm text-gray-700 dark:text-gray-300 w-20">{t("supervisor")}</small>
+                                                <small className="truncate text-xs sm:text-sm text-gray-600 dark:text-gray-400">: {recap.supervisor.nama_lengkap !== recap.sales_name ? recap.supervisor.nama_lengkap : "-"}</small>
                                             </p>
-                                            <p className="text-sm text-gray-600 flex items-center">
-                                                <small className="font-semibold text-xs sm:text-sm text-gray-700 w-20">{t("manager")}</small>
-                                                <small className="truncate text-xs sm:text-sm">: {recap.manager.nama_lengkap !== recap.sales_name ? recap.manager.nama_lengkap : "-"}</small>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
+                                                <small className="font-semibold text-xs sm:text-sm text-gray-700 dark:text-gray-300 w-20">{t("manager")}</small>
+                                                <small className="truncate text-xs sm:text-sm text-gray-600 dark:text-gray-400">: {recap.manager.nama_lengkap !== recap.sales_name ? recap.manager.nama_lengkap : "-"}</small>
                                             </p>
                                         </div>
                                     </div>
@@ -234,30 +234,30 @@ const DailyQuotes: React.FC = () => {
                             </div>
 
                             <div className="sm:w-1/2">
-                                <div onClick={() => toggleItem(index)} className="cursor-pointer bg-gradient-to-r from-orange-100 to-orange-200 p-2 text-center rounded-xl border-b-0">
-                                    <p className="text-sm font-medium text-orange-600">
+                                <div onClick={() => toggleItem(index)} className="cursor-pointer bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 p-2 text-center rounded-xl border-b-0">
+                                    <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
                                         {t("grandTotal")} ({recap.total_request_quotation} {t("quotes")})
                                     </p>
-                                    <p className="font-bold text-orange-900 text-md">{formatCurrency(recap.total_biaya_akhir)}</p>
+                                    <p className="font-bold text-orange-900 dark:text-orange-300 text-md">{formatCurrency(recap.total_biaya_akhir)}</p>
                                 </div>
 
                                 <AnimatePresence initial={false}>
                                     {openItems[index] && (
-                                        <motion.div key={`collapse-${index}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.1, ease: "easeInOut" }} className="overflow-hidden pt-2 pb-2 bg-white border-t-0 border-orange-200 px-0">
+                                        <motion.div key={`collapse-${index}`} initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.1, ease: "easeInOut" }} className="overflow-hidden pt-2 pb-2 bg-white dark:bg-gray-800 border-t-0 border-orange-200 dark:border-orange-700 px-0">
                                             <div className="grid grid-cols-2 gap-3">
-                                                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-2 border border-blue-200 text-center">
-                                                    <p className="text-xs font-semibold text-blue-700">{t("newCustomers")}</p>
-                                                    <p className="text-xs font-semibold text-blue-700">
+                                                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-2 border border-blue-200 dark:border-blue-700 text-center">
+                                                    <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">{t("newCustomers")}</p>
+                                                    <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">
                                                         ({recap.pelanggan_baru} {t("quotes")})
                                                     </p>
-                                                    <p className="font-bold text-blue-900 text-sm mt-1">{formatCurrency(recap.total_biaya_pelanggan_baru)}</p>
+                                                    <p className="font-bold text-blue-900 dark:text-blue-200 text-sm mt-1">{formatCurrency(recap.total_biaya_pelanggan_baru)}</p>
                                                 </div>
-                                                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-2 border border-green-200 text-center">
-                                                    <p className="text-xs font-semibold text-green-700">{t("existingCustomers")}</p>
-                                                    <p className="text-xs font-semibold text-green-700">
+                                                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-2 border border-green-200 dark:border-green-700 text-center">
+                                                    <p className="text-xs font-semibold text-green-700 dark:text-green-300">{t("existingCustomers")}</p>
+                                                    <p className="text-xs font-semibold text-green-700 dark:text-green-300">
                                                         ({recap.pelanggan_lama} {t("quotes")})
                                                     </p>
-                                                    <p className="font-bold text-green-900 text-sm mt-1">{formatCurrency(recap.total_biaya_pelanggan_lama)}</p>
+                                                    <p className="font-bold text-green-900 dark:text-green-200 text-sm mt-1">{formatCurrency(recap.total_biaya_pelanggan_lama)}</p>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -268,8 +268,8 @@ const DailyQuotes: React.FC = () => {
                     ))}
 
                     {filteredQuotes.length === 0 && !loading && (
-                        <div className="text-center py-8 text-gray-500">
-                            <Search size={48} className="mx-auto mb-4 text-gray-300" />
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <Search size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                             <p>{t("noDataFound")}</p>
                         </div>
                     )}

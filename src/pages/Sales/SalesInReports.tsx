@@ -109,16 +109,16 @@ const SalesInReports: React.FC = () => {
             const total = done + other;
 
             return (
-                <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200 text-left space-y-1">
-                    <p className="font-semibold text-gray-800">{label}</p>
-                    <p className="text-sm text-gray-700">
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-left space-y-1">
+                    <p className="font-semibold text-gray-800 dark:text-white">{label}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                         🟢 {t("completed")}: <span className="font-medium">{formatCurrency(done)}</span>
                     </p>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                         🟡 {t("inProgress")}: <span className="font-medium">{formatCurrency(other)}</span>
                     </p>
-                    <hr className="my-1 border-gray-200" />
-                    <p className="text-sm text-gray-900">
+                    <hr className="my-1 border-gray-200 dark:border-gray-600" />
+                    <p className="text-sm text-gray-900 dark:text-white">
                         💰 {t("totalIncome")}: <span className="font-bold">{formatCurrency(total)}</span>
                     </p>
                 </div>
@@ -128,7 +128,7 @@ const SalesInReports: React.FC = () => {
     };
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("salesInReports")}</h2>
             </motion.div>
@@ -152,17 +152,17 @@ const SalesInReports: React.FC = () => {
                       })}
             </div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <BarChart3 size={20} className="text-green-600" />
+                        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                            <BarChart3 size={20} className="text-green-600 dark:text-green-400" />
                         </div>
                         <div>
-                            <p className="font-medium text-sm text-gray-600">{t("sellingPerformanceThisYear")}</p>
+                            <p className="font-medium text-sm text-gray-600 dark:text-gray-300">{t("sellingPerformanceThisYear")}</p>
                         </div>
                     </div>
-                    <Activity size={20} className="text-gray-400" />
+                    <Activity size={20} className="text-gray-400 dark:text-gray-500" />
                 </div>
 
                 {loading ? (
@@ -170,9 +170,9 @@ const SalesInReports: React.FC = () => {
                 ) : (
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={chartData} margin={{ left: -17 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                            <XAxis dataKey="label" stroke="#6B7280" fontSize={10} tickLine={false} interval={0} />
-                            <YAxis stroke="#6B7280" fontSize={10} tickLine={false} tickFormatter={(value) => value / 1000000 + " " + t("million")} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" className="dark:stroke-gray-600" />
+                            <XAxis dataKey="label" stroke="#6B7280" className="dark:stroke-gray-400" fontSize={10} tickLine={false} interval={0} />
+                            <YAxis stroke="#6B7280" className="dark:stroke-gray-400" fontSize={10} tickLine={false} tickFormatter={(value) => value / 1000000 + " " + t("million")} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="done" fill="#10B981" radius={[4, 4, 0, 0]} />
                             <Bar dataKey="other" fill="#FACC15" radius={[4, 4, 0, 0]} />

@@ -121,23 +121,23 @@ const Employees = () => {
     const getStatusColor = (status_karyawan: EmployeeType["status_karyawan"]) => {
         let className = "";
         if (status_karyawan == "Permanent") {
-            className = "bg-blue-100 text-blue-800";
+            className = "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300";
         } else if (status_karyawan == "Special") {
-            className = "bg-yellow-100 text-yellow-800";
+            className = "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300";
         } else if (status_karyawan == "Probation") {
-            className = "bg-red-100 text-red-800";
+            className = "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
         } else if (status_karyawan == "Freelance") {
-            className = "bg-green-100 text-green-800";
+            className = "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
         } else if (status_karyawan == "Training") {
-            className = "bg-red-100 text-red-800";
+            className = "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
         } else if (status_karyawan == "Contract") {
-            className = "bg-green-100 text-green-800";
+            className = "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
         } else if (status_karyawan == "Kontrak") {
-            className = "bg-green-100 text-green-800";
+            className = "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
         } else if (status_karyawan == "Magang/Intern") {
-            className = "bg-yellow-100 text-yellow-800";
+            className = "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300";
         } else {
-            className = "bg-gray-100 text-gray-800";
+            className = "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300";
         }
 
         return className;
@@ -156,7 +156,7 @@ const Employees = () => {
     };
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
             {lightboxOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closeLightbox}>
                     <div className="relative max-w-4xl max-h-[90vh] p-4">
@@ -235,7 +235,7 @@ const Employees = () => {
             ) : (
                 <InfiniteScroll className="space-y-4 mb-3" style={{ overflow: "hidden !important" }} dataLength={employees.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                     {employees.map((employee, index) => (
-                        <motion.div key={employee.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 overflow-hidden">
+                        <motion.div key={employee.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <div
                                 onClick={() =>
                                     navigate(`/employee/employeeDetail`, {
@@ -255,9 +255,9 @@ const Employees = () => {
                                         }}
                                     />
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-gray-900 truncate">{employee.nama_lengkap}</h3>
-                                        <p className="text-sm text-gray-600">{employee.jabatan.nama_jabatan}</p>
-                                        <p className="text-xs text-gray-500">{employee.department}</p>
+                                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">{employee.nama_lengkap}</h3>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">{employee.jabatan.nama_jabatan}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">{employee.department}</p>
                                     </div>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(employee.status_karyawan)}`}>{t(employee.status_karyawan)}</span>
@@ -265,19 +265,13 @@ const Employees = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm px-2">
                                 <div className="flex items-center sm:justify-start space-x-2">
-                                    <Mail size={13} className="text-gray-400" />
-                                    <small className="text-xs text-gray-600">{employee.email}</small>
+                                    <Mail size={13} className="text-gray-400 dark:text-gray-500" />
+                                    <small className="text-xs text-gray-600 dark:text-gray-400">{employee.email}</small>
                                 </div>
                                 <div className="flex items-center sm:justify-center space-x-2">
-                                    <Phone size={13} className="text-gray-400" />
-                                    <small className="text-xs text-gray-600">{employee.no_telpon}</small>
+                                    <Phone size={13} className="text-gray-400 dark:text-gray-500" />
+                                    <small className="text-xs text-gray-600 dark:text-gray-400">{employee.no_telpon}</small>
                                 </div>
-                                {/* <div className="flex items-center sm:justify-end space-x-2">
-                                    <Calendar size={13} className="text-gray-400" />
-                                    <small className="text-xs text-gray-600">
-                                        {t("joined")}: {new Date(employee.tgl_mulai_kerja).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
-                                    </small>
-                                </div> */}
                             </div>
                         </motion.div>
                     ))}
@@ -285,8 +279,8 @@ const Employees = () => {
             )}
 
             {employees.length === 0 && !loading && (
-                <div className="text-center py-8 text-gray-500">
-                    <Search size={48} className="mx-auto mb-4 text-gray-300" />
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <Search size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                     <p>{t("noDataFound")}</p>
                 </div>
             )}

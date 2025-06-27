@@ -236,7 +236,7 @@ const SalaryOffers = () => {
                     ) : (
                         <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={salaries.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                             {salaries.map((candidate, index) => (
-                                <motion.div key={candidate.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <motion.div key={candidate.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                                     <div className="flex items-start justify-between mb-3">
                                         <div className="flex items-center space-x-4">
                                             <img
@@ -249,26 +249,26 @@ const SalaryOffers = () => {
                                                 }}
                                             />
                                             <div className="flex-1 min-w-0">
-                                                <h3 onClick={() => handleSalaryAction(candidate, "view")} className="font-semibold text-gray-900 truncate">
+                                                <h3 onClick={() => handleSalaryAction(candidate, "view")} className="font-semibold text-gray-900 dark:text-white truncate">
                                                     {candidate.nama_lengkap}
                                                 </h3>
-                                                <p className="text-sm text-gray-600">{candidate.jabatan.nama_jabatan}</p>
-                                                <p className="text-xs text-gray-500">{candidate.email}</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">{candidate.jabatan.nama_jabatan}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{candidate.email}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="flex flex-wrap gap-2 mb-4">
-                                        <span className="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">
+                                        <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs px-3 py-1 rounded-full font-medium">
                                             {t("candidate")}: {formatCurrency(candidate.salary_user)}
                                         </span>
-                                        <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
+                                        <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs px-3 py-1 rounded-full font-medium">
                                             {t("hrd")}: {candidate.offering_salary?.gaji_pokok ? formatCurrency(candidate.offering_salary.gaji_pokok) : "-"}
                                         </span>
                                     </div>
 
                                     <div className="flex justify-between space-x-3">
-                                        <button onClick={() => handleSalaryAction(candidate, "view")} className="border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                                        <button onClick={() => handleSalaryAction(candidate, "view")} className="border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                                             <Eye size={18} />
                                             <span className="text-xs hidden sm:block">{t("resume")}</span>
                                         </button>
@@ -291,8 +291,8 @@ const SalaryOffers = () => {
                     )}
 
                     {salaries.length === 0 && !loading && (
-                        <div className="text-center py-8 text-gray-500">
-                            <Search size={48} className="mx-auto mb-4 text-gray-300" />
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <Search size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                             <p>{t("noDataFound")}</p>
                         </div>
                     )}
