@@ -44,6 +44,8 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
 
         return percentage.toFixed(0);
     };
+  
+    const theme = document.documentElement.classList.contains('dark') ? "dark" : "light";
 
     const handleCandidateAction = async (action: "approve" | "reject") => {
         let titleKey = "";
@@ -60,6 +62,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
         }
 
         Swal.fire({
+            theme: theme,
             title: t(titleKey),
             confirmButtonText: t(action),
             cancelButtonText: t("cancel"),
