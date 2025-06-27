@@ -128,6 +128,8 @@ const SalaryOffers = () => {
 
         return `${years},${remainingMonths} years`;
     };
+  
+    const theme = document.documentElement.classList.contains('dark') ? "dark" : "light";
 
     const handleSalaryAction = (candidate: CandidateType, action: "view" | "approve" | "reject") => {
         if (action === "view") {
@@ -135,6 +137,7 @@ const SalaryOffers = () => {
             setShowDetail(true);
         } else {
             Swal.fire({
+                theme: theme,
                 title: t(`confirm_${action}Salary`),
                 confirmButtonText: t(action),
                 cancelButtonText: t("cancel"),
