@@ -23,20 +23,20 @@ const AppRouter: React.FC = () => {
     if (loading) return <LoadingScreen />;
 
     const routeConfigs: {
-        key: string;
+        key: number;
         path: string;
         component: React.LazyExoticComponent<React.ComponentType<any>>;
         protected: boolean;
         permissionName?: string; // optional, cuma dipake kalo protected
     }[] = [
-        ...[...new Set((menus ?? []).map((m) => m.group))].map((group) => ({
-            key: `group-${group}`,
+        ...[...new Set((menus ?? []).map(m => m.group))].map((group, index) => ({
+            key: index,
             path: `/${group}`,
-            component: lazyImport(group),
+            component: lazyImport(`/${group}`),
             protected: false,
         })),
-        ...(menus ?? []).map((menu) => ({
-            key: `menu-${menu.id}`,
+        ...(menus ?? []).map((menu, index) => ({
+            key: index,
             path: menu.path,
             component: lazyImport(menu.path),
             protected: true,

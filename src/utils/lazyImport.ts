@@ -1,11 +1,6 @@
 import { lazy } from "react";
 
-// export const lazyImport = (path: string) => {
-//     const segments = path.split("/").map(segment => segment.charAt(0).toUpperCase() + segment.slice(1));
-//     const importPath = `../pages/${segments.join("/")}`;
-
-//     return lazy(() => import(/* @vite-ignore */ importPath));
-// };
+const pageModules = import.meta.glob("/src/pages/**/*.tsx");
 
 const capitalize = (pathName: string) => pathName.charAt(0).toUpperCase() + pathName.slice(1);
 
@@ -20,10 +15,12 @@ export const lazyImport = (path: string) => {
         file = folder;
     } else {
         folder = capitalize(segments[0]);
-        file = capitalize(segments[segments.length - 1]);
+        file = capitalize(segments[1]);
     }
 
-    const importPath = `../pages/${folder}/${file}`;
+    const absolutePath = `/src/pages/${folder}/${file}.tsx`;
 
-    return lazy(() => import(/* @vite-ignore */ importPath));
+    const importer = pageModules[absolutePath] as () => Promise<{ default: React.ComponentType<any> }>;
+
+    return lazy(importer);
 };

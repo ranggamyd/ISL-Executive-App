@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import React, { useState, useEffect } from "react";
-import { CardSkeleton } from "@/components/Common/Skeleton";
-import { Search } from "lucide-react";
+// import { CardSkeleton } from "@/components/Common/Skeleton";
+// import { Search } from "lucide-react";
 import { LucideIconMap } from "@/utils/dynamicIcon";
 import MenuDrawer from "@/components/Layout/MenuDrawer";
 import Candidates from "../Recruitments/Candidates";
@@ -18,11 +18,11 @@ const HomePage: React.FC = () => {
 
     const { user, menus } = useAuth();
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const [searchTerm, setSearchTerm] = useState("");
 
-    const [loading, setLoading] = useState<boolean>(false);
+    // const [loading, setLoading] = useState<boolean>(false);
 
     const [limit, setLimit] = useState(6);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
             clearTimeout(typing);
             setTimeout(() => {
                 setCharIndex(0);
-                setIndex((prev) => (prev + 1) % texts.length);
+                setIndex(prev => (prev + 1) % texts.length);
             }, 3000); // delay before switching to next text
         }
 
@@ -111,7 +111,7 @@ const HomePage: React.FC = () => {
 
                 {/* Menu Grid */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
-                    {loading ? (
+                    {/* {loading ? (
                         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-10 gap-4">
                             {Array.from({ length: 5 }).map((_, index) => (
                                 <CardSkeleton key={index} />
@@ -123,7 +123,12 @@ const HomePage: React.FC = () => {
                                 <MenuItemCard key={index} index={index} menu={menu} setIsDrawerOpen={setIsDrawerOpen} />
                             ))}
                         </div>
-                    )}
+                    )} */}
+                    <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-4">
+                        {limitedMenus.map((menu, index) => (
+                            <MenuItemCard key={index} index={index} menu={menu} setIsDrawerOpen={setIsDrawerOpen} />
+                        ))}
+                    </div>
                 </motion.div>
             </div>
 

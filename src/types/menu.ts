@@ -5,7 +5,7 @@ export interface Menu {
     name: string;
     group: string;
     groupIcon: keyof typeof LucideIconMap | null;
-    path: string | null;
+    path: string;
     icon: keyof typeof LucideIconMap;
     theme: string;
 }
