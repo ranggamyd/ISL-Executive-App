@@ -120,6 +120,8 @@ const Candidates = () => {
 
         return `${years},${remainingMonths} years`;
     };
+  
+    const theme = document.documentElement.classList.contains('dark') ? "dark" : "light";
 
     const handleCandidateAction = (candidate: CandidateType, action: "view" | "approve" | "reject") => {
         if (action === "view") {
@@ -128,6 +130,7 @@ const Candidates = () => {
             setShowDetail(true);
         } else {
             Swal.fire({
+                theme: theme,
                 title: t(`confirm_${action}Candidate`),
                 confirmButtonText: t(action),
                 cancelButtonText: t("cancel"),
