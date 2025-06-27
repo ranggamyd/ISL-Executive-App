@@ -9,7 +9,7 @@ const Forbidden = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="fixed inset-0 flex flex-col items-center justify-center px-4 text-center bg-white dark:bg-gray-900 overflow-hidden">
+        <div className="fixed inset-0 flex flex-col items-center justify-center px-4 text-center overflow-hidden">
             <motion.img src="img/undraw_warning_tl76.svg" alt="Forbidden" className="w-80 max-w-full mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} />
 
             <motion.h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>

@@ -173,14 +173,14 @@ const GpsView = () => {
     const getStatusColor = (status: string): string => {
         switch (status) {
             case "Moving":
-                return "text-green-500 bg-green-100";
+                return "text-green-500 border border-green-400 bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur";
             case "Idling":
-                return "text-yellow-500 bg-yellow-100";
+                return "text-yellow-500 border border-yellow-400 bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur";
             case "Parking":
-                return "text-red-500 bg-red-100";
+                return "text-red-500 border border-red-400 bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur";
 
             default:
-                return "text-gray-500 bg-gray-100";
+                return "text-gray-500 border border-gray-400 bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur";
         }
     };
 
@@ -271,11 +271,11 @@ const GpsView = () => {
 
     return (
         <div className="p-6 space-y-6">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-2 shadow-sm border border-gray-100">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-gray-800/70 rounded-xl p-2 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
                     <button onClick={() => setIsMapFullscreen(!isMapFullscreen)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors me-4">
-                        {isMapFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                        {isMapFullscreen ? <Minimize2 size={18} className="dark:text-white" /> : <Maximize2 size={18} className="dark:text-white" />}
                     </button>
                 </div>
 
@@ -404,17 +404,21 @@ const GpsView = () => {
                                 e.stopPropagation();
                                 handleVehicleClick(vehicle.id);
                             }}
-                            className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-lg active:scale-[0.98] min-h-[120px] ${openPopupVehicleId === vehicle.id ? "border-blue-500 bg-blue-50 shadow-lg ring-2 ring-blue-200" : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"}`}
+                            className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-lg active:scale-[0.98] min-h-[120px] ${
+                                openPopupVehicleId === vehicle.id
+                                    ? "border-blue-500 bg-blue-50 shadow-lg ring-2 ring-blue-200 dark:border-blue-800 dark:bg-blue-900 dark:ring-2 dark:ring-blue-800"
+                                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600 dark:hover:shadow-md"
+                            }`}
                             style={{ userSelect: "none" }}
                         >
                             <div className="flex flex-col h-full">
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-3">
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-gray-900 whitespace-nowrap text-sm">{vehicle.name}</h3>
-                                        <p className="text-xs text-gray-500 capitalize mt-1">{t(vehicle.category)}</p>
+                                        <h3 className="font-semibold text-gray-900 dark:text-white whitespace-nowrap text-sm">{vehicle.name}</h3>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize mt-1">{t(vehicle.category)}</p>
                                     </div>
-                                    <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusColor} -mt-7 -me-8 sm:mt-0 sm:me-0`}>
+                                    <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusColor} -mt-7 -me-8 sm:mt-0 sm:me-0 `}>
                                         {statusIcon}
                                         <span className="hidden sm:inline">{t(status || "offline")}</span>
                                     </div>
@@ -424,7 +428,7 @@ const GpsView = () => {
                                 <div className="mt-auto">
                                     {position && (
                                         <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-                                            <span className="font-medium truncate">
+                                            <span className="font-medium truncate dark:text-gray-400">
                                                 <span className="hidden sm:inline">{t("speed")}: </span>
                                                 {(Number(position.speed) * 1.609344).toFixed(0)} km/h
                                             </span>

@@ -254,7 +254,8 @@ const translations = {
         light: "Terang",
         dark: "Gelap",
         system: "Sistem",
-        close: "Tutup"
+        close: "Tutup",
+        menusList: "Daftar Menu",
     },
 
     en: {
@@ -491,7 +492,8 @@ const translations = {
         light: "Light",
         dark: "Dark",
         system: "System",
-        close: "Close"
+        close: "Close",
+        menuList: "Menu List"
     },
 
     zh: {
@@ -728,7 +730,8 @@ const translations = {
         light: "浅色",
         dark: "深色",
         system: "系统",
-        close: "关"
+        close: "关",
+        menuList: "菜单列表",
     },
 };
 

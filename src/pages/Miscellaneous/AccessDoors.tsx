@@ -8,9 +8,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ListSkeleton } from "@/components/Common/Skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AccessLogs as AccessLogsType } from "@/types/accessLogs";
-import { ChevronDown, DoorOpen, Filter, LaptopMinimalCheck, Search } from "lucide-react";
+import { ChevronDown, DoorClosed, DoorClosedLocked, DoorOpen, Filter, LaptopMinimalCheck, Search } from "lucide-react";
 import SearchInput from "@/components/Common/SearchInput";
 import FilterButton from "@/components/Common/FilterButton";
+import SearchInputWithFilter from "@/components/Common/SearchInputWithFilter";
+import NoDataFound from "@/components/Common/NoDataFound";
 
 const AccessDoors = () => {
     const { t } = useLanguage();
@@ -48,7 +50,7 @@ const AccessDoors = () => {
                 if (page === 1) setAccessLogs([]);
                 setHasMore(false);
             } else {
-                setAccessLogs((prev) => (append ? [...prev, ...accesslogsList] : accesslogsList));
+                setAccessLogs(prev => (append ? [...prev, ...accesslogsList] : accesslogsList));
                 setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
@@ -107,122 +109,92 @@ const AccessDoors = () => {
         setSelectedEmployee("");
     };
 
+    const theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+
     const handleDoorAction = (mode: string) => {
         Swal.fire({
+            theme: theme,
             title: t(`confirm_${mode}AllDoors`),
             confirmButtonText: t(mode),
             cancelButtonText: t("cancel"),
-            confirmButtonColor: mode === "normalize" ? "#22C55E" : "#7e22ce",
+            confirmButtonColor: mode === "normalize" ? "#ea580c" : "#16a34a",
             showCancelButton: true,
             reverseButtons: true,
-        }).then(async (result) => {
+        }).then(async result => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: "info",
                     title: t("comingSoon"),
                     text: t("featureIsCurrentlyBeingDeveloped"),
                 });
-                // setLoading(true);
-                // try {
-                //     const { data } = await API.post(`employees/accessDoors/${mode}AllDoors`);
-
-                //     swal("success", data.message);
-                // } catch (err: any) {
-                //     swal("error", err.response.data.message);
-                // } finally {
-                //     setLoading(false);
-                // }
             }
         });
     };
 
     return (
         <div className="p-6 space-y-4">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("accessLogList")}</h2>
-                <div className="flex items-center space-x-4">
-                    <div className="flex-1">
-                        <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-                    </div>
-                    <div className="relative" ref={filterRef}>
-                        <FilterButton filterOpen={filterOpen} setFilterOpen={setFilterOpen} />
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
+                <h2 className="text-2xl font-bold text-white mb-1">{t("accessLogList")}</h2>
+            </motion.div>
 
-                        {filterOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                                <div className="p-4 space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("device")}</label>
-                                        <select value={selectedDevice} onChange={(e) => setSelectedDevice(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allDevices")}</option>
-                                            {uniqueDevices.map((device) => (
-                                                <option key={device.id} value={device.id}>
-                                                    {device.nama_device}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("employee")}</label>
-                                        <select value={selectedEmployee} onChange={(e) => setSelectedEmployee(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allEmployees")}</option>
-                                            {uniqueEmployees.map((employee) => (
-                                                <option key={employee.id} value={employee.id}>
-                                                    {employee.nama_lengkap}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:underline me-1">
-                                            {t("clearAll")}
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </div>
+            <SearchInputWithFilter searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterRef={filterRef} filterOpen={filterOpen} setFilterOpen={setFilterOpen} clearFilters={clearFilters}>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("device")}</label>
+                    <select value={selectedDevice} onChange={e => setSelectedDevice(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allDevices")}</option>
+                        {uniqueDevices.map(device => (
+                            <option key={device.id} value={device.id}>
+                                {device.nama_device}
+                            </option>
+                        ))}
+                    </select>
                 </div>
-                <div className="flex space-x-2 mt-3">
-                    <button onClick={() => handleDoorAction("open")} className="flex-1 bg-gradient-to-br from-indigo-600 to-purple-700 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
-                        <DoorOpen size={18} />
-                        <span className="text-xs">{t("openAllDoors")}</span>
-                    </button>
-                    <button onClick={() => handleDoorAction("normalize")} className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
-                        <LaptopMinimalCheck size={18} />
-                        <span className="text-xs">{t("normalizeDoors")}</span>
-                    </button>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("employee")}</label>
+                    <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allEmployees")}</option>
+                        {uniqueEmployees.map(employee => (
+                            <option key={employee.id} value={employee.id}>
+                                {employee.nama_lengkap}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+            </SearchInputWithFilter>
+
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex space-x-2 mt-3">
+                <button onClick={() => handleDoorAction("open")} className="flex-1 bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                    <DoorOpen size={18} />
+                    <span className="text-xs">{t("openAllDoors")}</span>
+                </button>
+                <button onClick={() => handleDoorAction("normalize")} className="flex-1 bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                    <LaptopMinimalCheck size={18} />
+                    <span className="text-xs">{t("normalizeDoors")}</span>
+                </button>
             </motion.div>
 
             {loading ? (
                 <ListSkeleton items={searchTerm ? 1 : 3} />
+            ) : accessLogs.length < 1 ? (
+                <NoDataFound />
             ) : (
-                <InfiniteScroll className="space-y-4 mb-3" style={{ overflow: "hidden !important" }} dataLength={accessLogs.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
+                <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={accessLogs.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
                     {accessLogs.map((log, index) => (
-                        <motion.div key={log.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                        <motion.div key={log.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${log.status === "Access diTerima" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
-                                    <DoorOpen size={18} />
-                                </div>
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${log.status === "Access diTerima" ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"}`}>{log.status === "Access diTerima" ? <DoorOpen size={18} /> : <DoorClosedLocked size={18} />}</div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-gray-900 truncate">{log.karyawan?.nama_lengkap}</p>
-                                    <p className="text-sm text-gray-600">{log.device?.nama_device}</p>
+                                    <p className="font-medium text-gray-900 dark:text-white truncate">{log.karyawan?.nama_lengkap}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">{log.device?.nama_device}</p>
                                 </div>
                             </div>
                             <div className="text-right">
                                 <span className={`-me-2 text-xs px-2 py-1 rounded-full ${log.status === "Access diTerima" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>{log.status === "Access diTerima" ? t("granted") : t("denied")}</span>
-                                <p className="text-xs mt-1 font-medium text-gray-900">{log.jam}</p>
+                                <p className="text-xs mt-1 font-medium text-gray-900 dark:text-gray-400">{log.jam}</p>
                             </div>
                         </motion.div>
                     ))}
                 </InfiniteScroll>
-            )}
-
-            {accessLogs.length === 0 && !loading && (
-                <div className="text-center py-8 text-gray-500">
-                    <Search size={48} className="mx-auto mb-4 text-gray-300" />
-                    <p>{t("noDataFound")}</p>
-                </div>
             )}
         </div>
     );

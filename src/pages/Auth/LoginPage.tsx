@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Eye, EyeOff, Lock, LogIn, Mail } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LoadingSpinner from "@/components/Common/LoadingSpinner";
+import { AtSign, Eye, EyeOff, Lock, LogIn } from "lucide-react";
 
 const LoginPage: React.FC = () => {
     const { t } = useLanguage();
@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t("credential")}</label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
+                                <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                                 <input type="credential" value={credential} onChange={e => setCredential(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white" placeholder="example" required />
                             </div>
                         </div>

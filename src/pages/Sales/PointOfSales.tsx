@@ -27,7 +27,7 @@ const PointOfSales: React.FC = () => {
                 const { data } = await API.get("sales/pointOfSales");
 
                 const bulanRaw = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-                const bulan = bulanRaw.map((b) => t(b));
+                const bulan = bulanRaw.map(b => t(b));
 
                 const dataWithLabel = {
                     ...data,
@@ -63,7 +63,7 @@ const PointOfSales: React.FC = () => {
         },
         {
             title: t("salesThisMonth"),
-            value: pointOfSales.point_of_sales.find((item) => item.periode_kontrak === new Date().toISOString().slice(0, 7))?.total_penjualan ?? 0,
+            value: pointOfSales.point_of_sales.find(item => item.periode_kontrak === new Date().toISOString().slice(0, 7))?.total_penjualan ?? 0,
             icon: BarChart2,
             color: "from-orange-500 to-orange-600",
             type: "currency",
@@ -78,9 +78,9 @@ const PointOfSales: React.FC = () => {
     ];
 
     return (
-        <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("pointOfSales")}</h2>
+        <div className="p-6 space-y-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-white mb-1">{t("pointOfSales")}</h2>
             </motion.div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

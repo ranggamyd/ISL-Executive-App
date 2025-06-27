@@ -3,24 +3,81 @@ import Swal from "sweetalert2";
 import swal from "@/utils/swal";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Candidate, Certificate, Education, Experience, Language, Organization, Skill } from "@/types/candidate";
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, X, Clock, Award, MessageSquare, VenusAndMars, Medal, IdCard, Globe, Building2, ScrollText, ThumbsUp, ThumbsDown, XCircle, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Lightbox from "@/components/Common/Lightbox";
 import { useUserAccess } from "@/hooks/useUserAccess";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Candidate, Certificate, Education, Experience, Language, Organization, Skill } from "@/types/candidate";
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, GraduationCap, Clock, Award, MessageSquare, VenusAndMars, Medal, IdCard, Globe, Building2, ScrollText, ThumbsUp, ThumbsDown, XCircle, CheckCircle } from "lucide-react";
 
-export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candidate; yoe: string; onClose: () => void }) => {
+interface CandidateDetailProps {
+    candidate: Candidate;
+    yoe: string;
+    onClose: () => void;
+}
+
+export const CandidateDetail: React.FC<CandidateDetailProps> = ({ candidate, yoe, onClose }) => {
     const { t } = useLanguage();
 
     const navigate = useNavigate();
 
     const { canAccess } = useUserAccess();
 
-    // const { candidate, yoe } = useLocation().state as { candidate: Candidate; yoe: string };
-
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxImage, setLightboxImage] = useState("");
     const [lightboxTitle, setLightboxTitle] = useState("");
+
+    const theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+
+    const handleCandidateAction = async (action: "approve" | "reject") => {
+        let title = "";
+        let endpoint = "";
+
+        if (candidate.status === "APPROVE INTERVIEW HRD") {
+            title = `confirm_${action}Candidate`;
+            endpoint = `${action}Candidate`;
+        }
+
+        if (candidate.status === "APPROVE OFFERING SALARY HRD") {
+            title = `confirm_${action}Salary`;
+            endpoint = `${action}Salary`;
+        }
+
+        Swal.fire({
+            theme: theme,
+            title: t(title),
+            confirmButtonText: t(action),
+            cancelButtonText: t("cancel"),
+            confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
+            showCancelButton: true,
+            reverseButtons: true,
+        }).then(async result => {
+            if (result.isConfirmed) {
+                try {
+                    const { data } = await API.post(`recruitment/${endpoint}`, {
+                        id: candidate.id,
+                    });
+
+                    swal("success", data.message);
+                    navigate("/recruitment", { replace: true });
+                } catch (err: any) {
+                    swal("error", err.response.data.message);
+                }
+            }
+        });
+    };
+
+    const openLightbox = (image: string, title: string) => {
+        setLightboxImage(image);
+        setLightboxTitle(title);
+        setLightboxOpen(true);
+    };
+
+    const closeLightbox = () => {
+        setLightboxOpen(false);
+        setLightboxImage("");
+        setLightboxTitle("");
+    };
 
     const interviewScore = (() => {
         const hrdReview = candidate.review_recruitment;
@@ -37,91 +94,21 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
         return percentage.toFixed(1);
     })();
 
-    const calculateLanguageSkillScores = (skill: any) => {
+    const calculateLanguageSkillScores = (skill: Language) => {
         const scores = [skill.baca, skill.tulis, skill.dengar, skill.bicara];
-        const totalGot = scores.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+        const totalGot = scores.reduce((acc, scores) => acc + parseInt(scores.toString()), 0);
         const percentage = (totalGot / 20) * 100;
 
         return percentage.toFixed(0);
     };
-  
-    const theme = document.documentElement.classList.contains('dark') ? "dark" : "light";
-
-    const handleCandidateAction = async (action: "approve" | "reject") => {
-        let titleKey = "";
-        let endpoint = "";
-
-        if (candidate.status === "APPROVE INTERVIEW HRD") {
-            titleKey = `confirm_${action}Candidate`;
-            endpoint = `${action}Candidate`;
-        }
-
-        if (candidate.status === "APPROVE OFFERING SALARY HRD") {
-            titleKey = `confirm_${action}Salary`;
-            endpoint = `${action}Salary`;
-        }
-
-        Swal.fire({
-            theme: theme,
-            title: t(titleKey),
-            confirmButtonText: t(action),
-            cancelButtonText: t("cancel"),
-            confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
-            showCancelButton: true,
-            reverseButtons: true,
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const { data } = await API.post(`recruitment/${endpoint}`, {
-                        id: candidate.id,
-                    });
-
-                    swal("success", data.message);
-                    navigate("/recruitment", { replace: true });
-                } catch (err: any) {
-                    swal("error", err.response.data.message);
-                }
-            }
-        });
-    };
-
-    const openLightbox = (imageSrc: string, title: string) => {
-        setLightboxImage(imageSrc);
-        setLightboxTitle(title);
-        setLightboxOpen(true);
-    };
-
-    const closeLightbox = () => {
-        setLightboxOpen(false);
-        setLightboxImage("");
-        setLightboxTitle("");
-    };
 
     return (
-        <div className="p-6 space-y-6 min-h-screen">
-            {lightboxOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closeLightbox}>
-                    <div className="relative max-w-4xl max-h-[90vh] p-4">
-                        <button onClick={closeLightbox} className="absolute -top-10 right-0 text-white hover:text-gray-300 text-2xl font-bold">
-                            <X size={32} />
-                        </button>
-                        <img src={lightboxImage} alt={lightboxTitle} className="max-w-full max-h-full object-contain rounded-lg" onClick={(e) => e.stopPropagation()} />
-                        {lightboxTitle && (
-                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
-                                <h3 className="text-lg font-semibold">{lightboxTitle}</h3>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
+        <div className="p-6 space-y-4">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
-                <div onClick={onClose} className="flex items-center space-x-2">
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                        <ArrowLeft size={18} className="text-gray-800 dark:text-gray-200" />
-                    </button>
-                    <h1 className="text-md font-bold text-gray-800 dark:text-white truncate">{t("resume")}</h1>
-                </div>
+                <button onClick={onClose} className="text-white py-2 px-4 font-medium flex items-center justify-center space-x-2">
+                    <ArrowLeft size={18} />
+                    <span className="text-xs">{t("resume")}</span>
+                </button>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex space-x-4">
                     {canAccess(candidate.status === "APPROVE INTERVIEW HRD" ? "candidates" : "salaryOffers", "reject") && (
@@ -139,7 +126,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                 </motion.div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-4">
                         <img
@@ -147,14 +134,14 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                             alt="Candidate Avatar"
                             className="w-20 h-20 rounded-full object-cover cursor-pointer hover:opacity-75 transition-opacity"
                             onClick={() => openLightbox(import.meta.env.VITE_PUBLIC_URL + "recruitment/foto/" + candidate.foto_selfie, candidate.nama_lengkap)}
-                            onError={(e) => {
+                            onError={e => {
                                 e.currentTarget.outerHTML = `<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">${candidate.nama_lengkap.charAt(0)}</div>`;
                             }}
                         />
                         <div>
-                            <h2 className="text-xl font-bold mb-1">{candidate.nama_lengkap}</h2>
-                            <p className="text-blue-100 text-md capitalize">{`${candidate.jabatan.nama_jabatan}`}</p>
-                            <p className="text-blue-200 text-xs">
+                            <h2 className="text-xl font-bold mb-1 text-gray-700 dark:text-white">{candidate.nama_lengkap}</h2>
+                            <p className="text-gray-600 dark:text-gray-200 text-md capitalize">{`${candidate.jabatan.nama_jabatan}`}</p>
+                            <p className="text-gray-500 dark:text-gray-300 text-xs">
                                 {candidate.shio} & {candidate.elemen}
                             </p>
                         </div>
@@ -162,19 +149,19 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
 
                     <div className="hidden sm:block">
                         <div className="p-2 bg-gray-100/50 backdrop-blur rounded-full transition-colors flex items-center justify-center space-x-2">
-                            <Clock size={18} className="text-gray-800" />
-                            <span className="font-medium text-xs text-gray-800">{candidate.status}</span>
+                            <Clock size={18} className="text-gray-600 dark:text-gray-800" />
+                            <span className="font-medium text-xs text-gray-600 dark:text-gray-800">{candidate.status}</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
-                        <p className="text-xl font-bold">{yoe}</p>
-                        <p className="text-blue-200 text-xs">{t("experiences")}</p>
+                        <p className="text-xl font-bold text-gray-600 dark:text-white">{yoe}</p>
+                        <p className="text-gray-600 dark:text-gray-200 text-xs">{t("experiences")}</p>
                     </div>
                     <div className="flex flex-col justify-center items-center">
-                        <p className="text-xl font-bold">
+                        <p className="text-xl font-bold text-gray-600 dark:text-white">
                             {new Intl.NumberFormat("id-ID", {
                                 style: "currency",
                                 currency: "IDR",
@@ -182,11 +169,11 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                                 maximumFractionDigits: 0,
                             }).format(candidate.salary_user || 0)}
                         </p>
-                        <p className="text-blue-200 text-xs text-center">{t("expectedSalary")}</p>
+                        <p className="text-gray-600 dark:text-gray-200 text-xs text-center">{t("expectedSalary")}</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold">{interviewScore}%</p>
-                        <p className="text-blue-200 text-xs">{t("interviewScores")}</p>
+                        <p className="text-xl font-bold text-gray-600 dark:text-white">{interviewScore}%</p>
+                        <p className="text-gray-600 dark:text-gray-200 text-xs">{t("interviewScores")}</p>
                     </div>
                 </div>
             </motion.div>
@@ -198,7 +185,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                             <VenusAndMars size={18} className="text-blue-600 dark:text-blue-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("genderAndAge")}</p>
                             <small className="font-medium text-gray-900 dark:text-white">
                                 {candidate.gender}, {candidate.umur} {t("yearsOld")}
@@ -209,7 +196,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                             <Calendar size={18} className="text-blue-600 dark:text-blue-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("dateOfBirth")}</p>
                             <small className="font-medium text-gray-900 dark:text-white">
                                 {candidate.tempat_lahir},{" "}
@@ -225,7 +212,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
                             <Mail size={18} className="text-yellow-600 dark:text-yellow-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("email")}</p>
                             <small className="font-medium text-gray-900 dark:text-white">{candidate.email}</small>
                         </div>
@@ -234,7 +221,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                             <Phone size={18} className="text-green-600 dark:text-green-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("phoneNumber")}</p>
                             <small className="font-medium text-gray-900 dark:text-white">{candidate.no_hp}</small>
                         </div>
@@ -243,7 +230,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
                             <IdCard size={18} className="text-purple-600 dark:text-purple-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("identityCardAddress")}</p>
                             <small className="font-medium text-gray-900 dark:text-white inline-block max-w-[275px]">{candidate.alamat_ktp}</small>
                         </div>
@@ -252,7 +239,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
                             <MapPin size={18} className="text-purple-600 dark:text-purple-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("domisileAddress")}</p>
                             <small className="font-medium text-gray-900 dark:text-white inline-block max-w-[275px]">{candidate.alamat_domisili}</small>
                         </div>
@@ -267,7 +254,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
                             <GraduationCap size={18} className="text-indigo-600 dark:text-indigo-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("educations")}</p>
                             {candidate.pendidikan ? (
                                 JSON.parse(candidate.pendidikan)?.map((edu: Education, index: number) => (
@@ -288,7 +275,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center">
                             <Building2 size={18} className="text-teal-600 dark:text-teal-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("workExperiences")}</p>
                             {candidate.pengalaman_kerja ? (
                                 JSON.parse(candidate.pengalaman_kerja)?.map((experience: Experience, index: number) => (
@@ -309,7 +296,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
                             <Briefcase size={18} className="text-orange-600 dark:text-orange-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("organizations")}</p>
                             {candidate.organisasi ? (
                                 JSON.parse(candidate.organisasi)?.map((organization: Organization, index: number) => (
@@ -330,7 +317,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
                             <Medal size={18} className="text-yellow-600 dark:text-yellow-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("certificates")}</p>
                             {candidate.sertifikat ? (
                                 JSON.parse(candidate.sertifikat)?.map((certificate: Certificate, index: number) => (
@@ -357,12 +344,12 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
                             <Award size={18} className="text-pink-600 dark:text-pink-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("skills")}</p>
                             <div className="flex flex-wrap gap-2 mt-1">
                                 {candidate.skill ? (
                                     JSON.parse(candidate.skill)?.map((skill: Skill, index: number) => (
-                                        <small key={index} className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs">
+                                        <small key={index} className="bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-3 py-1 rounded-full text-xs">
                                             {skill.keahlian} ({skill.rate})
                                         </small>
                                     ))
@@ -376,7 +363,7 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                         <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                             <Globe size={18} className="text-blue-600 dark:text-blue-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-600 dark:text-gray-300">{t("languages")}</p>
                             <div className="flex flex-wrap gap-2 mt-1">
                                 {candidate.skill_bahasa ? (
@@ -487,6 +474,8 @@ export const CandidateDetail = ({ candidate, yoe, onClose }: { candidate: Candid
                     </p>
                 </div>
             </motion.div>
+
+            {lightboxOpen && <Lightbox image={lightboxImage} title={lightboxTitle} onClose={closeLightbox} />}
         </div>
     );
 };

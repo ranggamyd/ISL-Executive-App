@@ -11,6 +11,8 @@ import { Filter, Search, ChevronDown, FileText, CheckCircle, CircleAlert } from 
 import DateInput from "@/components/Common/DateInput";
 import FilterButton from "@/components/Common/FilterButton";
 import SearchInput from "@/components/Common/SearchInput";
+import DateInputWithFilter from "@/components/Common/DateInputWithFilter";
+import NoDataFound from "@/components/Common/NoDataFound";
 
 const SalesIns: React.FC = () => {
     const { t } = useLanguage();
@@ -49,7 +51,7 @@ const SalesIns: React.FC = () => {
                 if (page === 1) setSalesIns([]);
                 setHasMore(false);
             } else {
-                setSalesIns((prev) => (append ? [...prev, ...salesInsList] : salesInsList));
+                setSalesIns(prev => (append ? [...prev, ...salesInsList] : salesInsList));
                 setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
@@ -119,7 +121,7 @@ const SalesIns: React.FC = () => {
     };
 
     const toggleItem = (index: number) => {
-        setOpenItems((prev) => ({
+        setOpenItems(prev => ({
             ...prev,
             [index]: !prev[index],
         }));
@@ -127,130 +129,106 @@ const SalesIns: React.FC = () => {
 
     return (
         <div className="p-6 space-y-4">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("recapDailyQuotes")}</h2>
-                <div className="flex items-center space-x-4">
-                    <div className="flex-1">
-                        <DateInput date={date} setDate={setDate} />
-                    </div>
-                    <div className="relative" ref={filterRef}>
-                        <FilterButton filterOpen={filterOpen} setFilterOpen={setFilterOpen} />
-
-                        {filterOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                                <div className="p-4 space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("sales")}</label>
-                                        <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allStatuses")}</option>
-                                            {uniqueStatuses.map((status) => (
-                                                <option key={status} value={status}>
-                                                    {status}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("paymentType")}</label>
-                                        <select value={selectedPaymentType} onChange={(e) => setSelectedPaymentType(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allPaymentTypes")}</option>
-                                            {uniquePaymentTypes.map((paymentType) => (
-                                                <option key={paymentType} value={paymentType}>
-                                                    {paymentType}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("accountType")}</label>
-                                        <select value={selectedAccountType} onChange={(e) => setSelectedAccountType(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allAccountTypes")}</option>
-                                            {uniqueAccountTypes.map((accountType) => (
-                                                <option key={accountType} value={accountType}>
-                                                    {accountType}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:underline me-1">
-                                            {t("clearAll")}
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </div>
-                </div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-white mb-1">{t("salesIns")}</h2>
             </motion.div>
+
+            <DateInputWithFilter date={date} setDate={setDate} filterRef={filterRef} filterOpen={filterOpen} setFilterOpen={setFilterOpen} clearFilters={clearFilters}>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("sales")}</label>
+                    <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allStatuses")}</option>
+                        {uniqueStatuses.map(status => (
+                            <option key={status} value={status}>
+                                {status}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("paymentType")}</label>
+                    <select value={selectedPaymentType} onChange={e => setSelectedPaymentType(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allPaymentTypes")}</option>
+                        {uniquePaymentTypes.map(paymentType => (
+                            <option key={paymentType} value={paymentType}>
+                                {paymentType}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("accountType")}</label>
+                    <select value={selectedAccountType} onChange={e => setSelectedAccountType(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allAccountTypes")}</option>
+                        {uniqueAccountTypes.map(accountType => (
+                            <option key={accountType} value={accountType}>
+                                {accountType}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </DateInputWithFilter>
 
             <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-            <div className="flex justify-end items-end gap-2">
-                <h6 className="font-medium uppercase dark:text-white">Total :</h6> <span className="bg-green-100 text-green-800 text-md font-medium px-3 py-0.5 rounded-lg">{formatCurrency(salesInTotal)}</span>
+            <div className="flex justify-end items-center gap-2">
+                <h6 className="font-medium uppercase dark:text-white">Total :</h6> <span className="bg-green-100/70 dark:bg-green-800/70 text-green-800 dark:text-green-100 border border-green-400 dark:border-green-700 text-md font-medium px-3 py-0.5 rounded-lg">{formatCurrency(salesInTotal)}</span>
             </div>
 
             {loading ? (
-                <ListSkeleton items={3} />
+                <ListSkeleton items={searchTerm ? 1 : 3} />
+            ) : salesIns.length < 1 ? (
+                <NoDataFound />
             ) : (
-                <div className="grid gap-4">
-                    <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={salesIns.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
-                        {salesIns.map((item, index) => (
-                            <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow transition-shadow">
-                                <div className="grid grid-cols-2 gap-4 items-start">
-                                    <div className="space-y-1 text-sm text-gray-700">
-                                        <div className="flex items-center gap-2">
-                                            <FileText className="w-4 h-4 text-blue-500" />
-                                            <span className="font-medium">{item.no_dokumen}</span>
-                                        </div>
-                                        {item.status == "Done" ? (
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="w-4 h-4 text-green-500" />
-                                                <span className="text-green-800">{item.status}</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2">
-                                                <CircleAlert className="w-4 h-4 text-gray-500" />
-                                                <span className="text-gray-800">{item.status}</span>
-                                            </div>
-                                        )}
-                                        <div onClick={() => toggleItem(index)} className="cursor-pointer">
-                                            <AnimatePresence initial={false}>
-                                                <motion.div
-                                                    key={`collapse-${index}`}
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{
-                                                        height: "auto",
-                                                        opacity: 1,
-                                                    }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.15, ease: "easeInOut" }}
-                                                    className={`overflow-hidden text-xs sm:text-sm ${openItems[index] ? "" : "whitespace-nowrap truncate"}`}
-                                                >
-                                                    {item.keterangan}
-                                                </motion.div>
-                                            </AnimatePresence>
-                                        </div>
+                <InfiniteScroll className="space-y-3 mb-3" style={{ overflow: "hidden !important" }} dataLength={salesIns.length} next={loadMore} hasMore={hasMore} loader={<ListSkeleton items={3} />}>
+                    {salesIns.map((item, index) => (
+                        <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow transition-shadow">
+                            <div className="grid grid-cols-2 gap-4 items-start">
+                                <div className="space-y-1 text-sm text-gray-700 dark:text-white">
+                                    <div className="flex items-center gap-2">
+                                        <FileText className="w-4 h-4 text-blue-500" />
+                                        <span className="font-medium">{item.no_dokumen}</span>
                                     </div>
-                                    <div className="flex flex-col items-end justify-between">
-                                        <span className="text-lg font-bold text-gray-900">{formatCurrency(item.nominal)}</span>
-                                        <div className="flex gap-2 mt-1">
-                                            <span className="bg-purple-100 text-purple-800 text-xs rounded-full px-2 py-1">{item.type_pembayaran}</span>
-                                            <span className="bg-yellow-100 text-yellow-800 text-xs rounded-full px-2 py-1">{item.type_rekening}</span>
+                                    {item.status == "Done" ? (
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle className="w-4 h-4 text-green-500" />
+                                            <span className="text-green-800">{item.status}</span>
                                         </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <CircleAlert className="w-4 h-4 text-gray-500" />
+                                            <span className="text-gray-800 dark:text-gray-400">{item.status}</span>
+                                        </div>
+                                    )}
+                                    <div onClick={() => toggleItem(index)} className="cursor-pointer dark:text-gray-300">
+                                        <AnimatePresence initial={false}>
+                                            <motion.div
+                                                key={`collapse-${index}`}
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{
+                                                    height: "auto",
+                                                    opacity: 1,
+                                                }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.15, ease: "easeInOut" }}
+                                                className={`overflow-hidden text-xs sm:text-sm ${openItems[index] ? "" : "whitespace-nowrap truncate"}`}
+                                            >
+                                                {item.keterangan}
+                                            </motion.div>
+                                        </AnimatePresence>
                                     </div>
                                 </div>
-                            </motion.div>
-                        ))}
-                    </InfiniteScroll>
-
-                    {salesIns.length === 0 && !loading && (
-                        <div className="text-center py-10 text-gray-500">
-                            <Search size={48} className="mx-auto mb-4 text-gray-300" />
-                            <p className="text-sm">{t("noDataFound")}</p>
-                        </div>
-                    )}
-                </div>
+                                <div className="flex flex-col items-end justify-between">
+                                    <span className="text-lg font-bold text-gray-900 dark:text-white">{formatCurrency(item.nominal)}</span>
+                                    <div className="flex gap-2 mt-1">
+                                        <span className="bg-purple-100 text-purple-800 text-xs rounded-full px-2 py-1">{item.type_pembayaran}</span>
+                                        <span className="bg-yellow-100 text-yellow-800 text-xs rounded-full px-2 py-1">{item.type_rekening}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </InfiniteScroll>
             )}
         </div>
     );

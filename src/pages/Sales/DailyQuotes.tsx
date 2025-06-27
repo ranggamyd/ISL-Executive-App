@@ -1,27 +1,28 @@
 import API from "@/lib/api";
 import swal from "@/utils/swal";
-import React, { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import NoDataFound from "@/components/Common/NoDataFound";
+import React, { useState, useEffect, useRef } from "react";
 import { DailyQuote as DailyQuoteType } from "@/types/dailyQuote";
 import { ListSkeleton, StatSkeleton } from "@/components/Common/Skeleton";
+import DateInputWithFilter from "@/components/Common/DateInputWithFilter";
+import { BarChart3, UserPlus, Users, FileText, Coins, Wallet } from "lucide-react";
 import { AnimatedNumber, AnimatedCurrency } from "@/components/Common/AnimatedCounter";
-import { BarChart3, Filter, Search, ChevronDown, UserPlus, Users, FileText, Coins, Wallet } from "lucide-react";
-import FilterButton from "@/components/Common/FilterButton";
-import DateInput from "@/components/Common/DateInput";
 
 const DailyQuotes: React.FC = () => {
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState<boolean>(true);
     const [dailyQuotes, setDailyQuotes] = useState<DailyQuoteType[]>([]);
-    const [openItems, setOpenItems] = useState<{ [key: number]: boolean }>({});
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
     const filterRef = useRef<HTMLDivElement | null>(null);
     const [filterOpen, setFilterOpen] = useState<boolean>(false);
     const [selectedSales, setSelectedSales] = useState<string>("");
     const [selectedSupervisor, setSelectedSupervisor] = useState<string>("");
     const [selectedManager, setSelectedManager] = useState<string>("");
+
+    const [openItems, setOpenItems] = useState<{ [key: number]: boolean }>({});
 
     useEffect(() => {
         (async () => {
@@ -39,47 +40,13 @@ const DailyQuotes: React.FC = () => {
         })();
     }, [date]);
 
-    const uniqueSales = [...new Set(dailyQuotes.map((item) => item.sales_name))];
-    const uniqueSupervisors = [...new Set(dailyQuotes.map((item) => item.supervisor.nama_lengkap))];
-    const uniqueManagers = [...new Set(dailyQuotes.map((item) => item.manager.nama_lengkap))];
+    const uniqueSales = [...new Set(dailyQuotes.map(item => item.sales_name))];
+    const uniqueSupervisors = [...new Set(dailyQuotes.map(item => item.supervisor.nama_lengkap))];
+    const uniqueManagers = [...new Set(dailyQuotes.map(item => item.manager.nama_lengkap))];
 
-    const filteredQuotes = dailyQuotes.filter((item) => {
+    const filteredQuotes = dailyQuotes.filter(item => {
         return (!selectedSales || item.sales_name === selectedSales) && (!selectedSupervisor || item.supervisor.nama_lengkap === selectedSupervisor) && (!selectedManager || item.manager.nama_lengkap === selectedManager);
     });
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-                setFilterOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-    const clearFilters = (): void => {
-        setSelectedSales("");
-        setSelectedSupervisor("");
-        setSelectedManager("");
-    };
-
-    const formatCurrency = (amount: number): string => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-        }).format(amount);
-    };
-
-    const toggleItem = (index: number) => {
-        setOpenItems((prev) => ({
-            ...prev,
-            [index]: !prev[index],
-        }));
-    };
 
     const salesStats = [
         {
@@ -126,64 +93,68 @@ const DailyQuotes: React.FC = () => {
         },
     ];
 
-    return (
-        <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("recapDailyQuotes")}</h2>
-                <div className="flex items-center space-x-4">
-                    <div className="flex-1">
-                        <DateInput date={date} setDate={setDate} />
-                    </div>
-                    <div className="relative" ref={filterRef}>
-                        <FilterButton filterOpen={filterOpen} setFilterOpen={setFilterOpen} />
+    const clearFilters = (): void => {
+        setSelectedSales("");
+        setSelectedSupervisor("");
+        setSelectedManager("");
+    };
 
-                        {filterOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                                <div className="p-4 space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("sales")}</label>
-                                        <select value={selectedSales} onChange={(e) => setSelectedSales(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allSales")}</option>
-                                            {uniqueSales.map((sales) => (
-                                                <option key={sales} value={sales}>
-                                                    {sales}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("supervisor")}</label>
-                                        <select value={selectedSupervisor} onChange={(e) => setSelectedSupervisor(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allSupervisors")}</option>
-                                            {uniqueSupervisors.map((supervisor) => (
-                                                <option key={supervisor} value={supervisor}>
-                                                    {supervisor}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("manager")}</label>
-                                        <select value={selectedManager} onChange={(e) => setSelectedManager(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">{t("allManagers")}</option>
-                                            {uniqueManagers.map((manager) => (
-                                                <option key={manager} value={manager}>
-                                                    {manager}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:underline me-1">
-                                            {t("clearAll")}
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </div>
-                </div>
+    const formatCurrency = (amount: number): string => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    const toggleItem = (index: number) => {
+        setOpenItems(prev => ({
+            ...prev,
+            [index]: !prev[index],
+        }));
+    };
+
+    return (
+        <div className="p-6 space-y-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-white mb-1">{t("recapDailyQuotes")}</h2>
             </motion.div>
+
+            <DateInputWithFilter date={date} setDate={setDate} filterRef={filterRef} filterOpen={filterOpen} setFilterOpen={setFilterOpen} clearFilters={clearFilters}>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("sales")}</label>
+                    <select value={selectedSales} onChange={e => setSelectedSales(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allSales")}</option>
+                        {uniqueSales.map(sales => (
+                            <option key={sales} value={sales}>
+                                {sales}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("supervisor")}</label>
+                    <select value={selectedSupervisor} onChange={e => setSelectedSupervisor(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allSupervisors")}</option>
+                        {uniqueSupervisors.map(supervisor => (
+                            <option key={supervisor} value={supervisor}>
+                                {supervisor}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("manager")}</label>
+                    <select value={selectedManager} onChange={e => setSelectedManager(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">{t("allManagers")}</option>
+                        {uniqueManagers.map(manager => (
+                            <option key={manager} value={manager}>
+                                {manager}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </DateInputWithFilter>
 
             <div className="grid grid-cols-3 gap-4">
                 {loading
@@ -191,7 +162,7 @@ const DailyQuotes: React.FC = () => {
                     : salesStats.map((stat, index) => {
                           const Icon = stat.icon;
                           return (
-                              <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className={`bg-gradient-to-br ${stat.color} rounded-xl p-4 text-white`}>
+                              <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className={`bg-gradient-to-br ${stat.color} rounded-xl p-4 text-white mt-3`}>
                                   <div className="flex flex-col items-center justify-between">
                                       <Icon size={20} className="text-white" />
                                       <div className="text-center mt-2">
@@ -204,14 +175,16 @@ const DailyQuotes: React.FC = () => {
                       })}
             </div>
 
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 text-center pt-6 pb-2">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("salesList")}</h2>
             </motion.div>
 
             {loading ? (
                 <ListSkeleton items={3} />
+            ) : filteredQuotes.length < 1 ? (
+                <NoDataFound />
             ) : (
-                <div className="grid gap-4">
+                <div className="space-y-3 mb-3">
                     {filteredQuotes.map((recap, index) => (
                         <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 sm:flex sm:justify-between mb-4">
                             <div className="flex items-start justify-between mb-4 sm:mb-1">
@@ -266,13 +239,6 @@ const DailyQuotes: React.FC = () => {
                             </div>
                         </motion.div>
                     ))}
-
-                    {filteredQuotes.length === 0 && !loading && (
-                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                            <Search size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                            <p>{t("noDataFound")}</p>
-                        </div>
-                    )}
                 </div>
             )}
         </div>

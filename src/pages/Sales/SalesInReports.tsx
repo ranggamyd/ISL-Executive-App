@@ -17,6 +17,7 @@ const SalesInReports: React.FC = () => {
         dataOrder: 0,
         data: [],
     });
+
     const [chartData, setChartData] = useState<any[]>([]);
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const SalesInReports: React.FC = () => {
                 const { data } = await API.get("sales/salesInReports");
 
                 const bulanRaw = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-                const bulan = bulanRaw.map((b) => t(b));
+                const bulan = bulanRaw.map(b => t(b));
 
                 const grouped: Record<string, { label: string; done: number; other: number }> = {};
 
@@ -72,14 +73,14 @@ const SalesInReports: React.FC = () => {
         },
         {
             title: t("todaysIncome"),
-            value: reports.data.find((item) => item.tanggal_masuk === new Date().toISOString().split("T")[0])?.nominal ?? 0,
+            value: reports.data.find(item => item.tanggal_masuk === new Date().toISOString().split("T")[0])?.nominal ?? 0,
             icon: CalendarCheck,
             color: "from-green-500 to-green-600",
             type: "currency",
         },
         {
             title: t("thisMonthsIncome"),
-            value: reports.data.find((item) => item.tanggal_masuk === new Date().toISOString().slice(0, 7))?.nominal ?? 0,
+            value: reports.data.find(item => item.tanggal_masuk === new Date().toISOString().slice(0, 7))?.nominal ?? 0,
             icon: BarChart2,
             color: "from-orange-500 to-orange-600",
             type: "currency",
@@ -128,9 +129,9 @@ const SalesInReports: React.FC = () => {
     };
 
     return (
-        <div className="p-6 space-y-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3.5 mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("salesInReports")}</h2>
+        <div className="p-6 space-y-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-white mb-1">{t("salesInReports")}</h2>
             </motion.div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -172,7 +173,7 @@ const SalesInReports: React.FC = () => {
                         <BarChart data={chartData} margin={{ left: -17 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" className="dark:stroke-gray-600" />
                             <XAxis dataKey="label" stroke="#6B7280" className="dark:stroke-gray-400" fontSize={10} tickLine={false} interval={0} />
-                            <YAxis stroke="#6B7280" className="dark:stroke-gray-400" fontSize={10} tickLine={false} tickFormatter={(value) => value / 1000000 + " " + t("million")} />
+                            <YAxis stroke="#6B7280" className="dark:stroke-gray-400" fontSize={10} tickLine={false} tickFormatter={value => value / 1000000 + " " + t("million")} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="done" fill="#10B981" radius={[4, 4, 0, 0]} />
                             <Bar dataKey="other" fill="#FACC15" radius={[4, 4, 0, 0]} />
