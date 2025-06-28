@@ -13,6 +13,7 @@ import { Position as PositionType, Vehicle as VehicleType } from "@/types/gps";
 import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Filter, ChevronDown, Minimize2, Maximize2 } from "lucide-react";
 import SearchInput from "@/components/Common/SearchInput";
 import FilterButton from "@/components/Common/FilterButton";
+import LoadingSpinner from "@/components/Common/LoadingSpinner";
 
 const icons = {
     car: {
@@ -39,6 +40,7 @@ const GpsView = () => {
     const [openPopupVehicleId, setOpenPopupVehicleId] = useState<number | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [isConnected, setIsConnected] = useState(false);
+    const [mapLoading, setMapLoading] = useState(true);
 
     // New states for filter dropdown
     const filterRef = useRef<HTMLDivElement | null>(null);
@@ -265,15 +267,6 @@ const GpsView = () => {
         }
     };
 
-    const categories = [...new Set(vehicles.map((v) => v.category))];
-    const statuses = ["Moving", "Idling", "Parking", "Offline"];
-
-    const clearAllFilters = () => {
-        setSelectedCategory("all");
-        setSelectedStatus("all");
-        setSearchTerm("");
-    };
-
     // Get appropriate tile layer based on theme
     const getTileLayer = () => {
         if (isDarkMode) {
@@ -284,16 +277,55 @@ const GpsView = () => {
                 subdomains: ["a", "b", "c", "d"]
             };
         } else {
-            // Light mode: Use Google Maps
+            // Light mode: Use CartoDB Positron tiles (lighter than Google Maps)
             return {
-                url: "https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}",
-                attribution: "&copy; Google",
-                subdomains: ["mt0", "mt1", "mt2", "mt3"]
+                url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+                subdomains: ["a", "b", "c", "d"]
             };
         }
     };
 
     const tileLayer = getTileLayer();
+
+    const categories = [...new Set(vehicles.map((v) => v.category))];
+    const statuses = ["Moving", "Idling", "Parking", "Offline"];
+
+    const clearAllFilters = () => {
+        setSelectedCategory("all");
+        setSelectedStatus("all");
+        setSearchTerm("");
+    };
+
+    // Add custom CSS for map loading state
+    useEffect(() => {
+        const style = document.createElement("style");
+        style.id = "map-loading-styles";
+        style.innerHTML = `
+            .leaflet-container {
+                background: ${isDarkMode ? '#1f2937' : '#f9fafb'} !important;
+            }
+            
+            .leaflet-tile-pane {
+                opacity: ${mapLoading ? '0' : '1'};
+                transition: opacity 0.3s ease-in-out;
+            }
+            
+            .leaflet-control-container {
+                opacity: ${mapLoading ? '0' : '1'};
+                transition: opacity 0.3s ease-in-out;
+            }
+        `;
+        
+        document.head.appendChild(style);
+        
+        return () => {
+            const existingStyle = document.getElementById("map-loading-styles");
+            if (existingStyle) {
+                document.head.removeChild(existingStyle);
+            }
+        };
+    }, [isDarkMode, mapLoading]);
 
     return (
         <div className="p-6 space-y-6">
@@ -316,9 +348,21 @@ const GpsView = () => {
                         </div>
                     )}
 
-                    <div className="flex flex-col bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                    <div className="flex flex-col bg-gray-50 dark:bg-gray-800 rounded-2xl relative">
                         {/* Map Container */}
                         <div className={`relative ${isMapFullscreen ? "h-[90dvh]" : "h-[400px]"}`}>
+                            {/* Loading Overlay */}
+                            {mapLoading && (
+                                <div className={`absolute inset-0 z-[1000] flex items-center justify-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-2xl`}>
+                                    <div className="flex flex-col items-center space-y-4">
+                                        <LoadingSpinner size={32} className={isDarkMode ? 'text-blue-400' : 'text-blue-600'} />
+                                        <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                            Loading map...
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="absolute inset-0 z-0 p-0">
                                 <MapContainer
                                     center={[-6.3175829, 106.6474905]}
@@ -330,7 +374,8 @@ const GpsView = () => {
                                         if (map) {
                                             setTimeout(() => {
                                                 map.invalidateSize();
-                                            }, 100);
+                                                setMapLoading(false);
+                                            }, 500);
                                         }
                                     }}
                                 >
@@ -339,6 +384,10 @@ const GpsView = () => {
                                         maxZoom={20} 
                                         subdomains={tileLayer.subdomains}
                                         attribution={tileLayer.attribution}
+                                        eventHandlers={{
+                                            loading: () => setMapLoading(true),
+                                            load: () => setMapLoading(false),
+                                        }}
                                     />
                                     {vehicles.map((vehicle) => {
                                         const position = positions[vehicle.id];
