@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import swal from "@/utils/swal";
 import { motion } from "framer-motion";
 import useDebounce from "@/hooks/useDebounce";
+import { useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { CandidateDetail } from "./CandidateDetail";
 import Lightbox from "@/components/Common/Lightbox";
@@ -15,7 +16,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Candidate as CandidateType } from "@/types/candidate";
 import SearchInputWithFilter from "@/components/Common/SearchInputWithFilter";
 
-const Candidates = (props: React.HTMLAttributes<HTMLDivElement>) => {
+const Candidates = () => {
+    const location = useLocation();
+    const isRevealedOnHomepage = location.pathname === "/" || location.pathname === "/dashboard";
+
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState(false);
@@ -154,9 +158,9 @@ const Candidates = (props: React.HTMLAttributes<HTMLDivElement>) => {
     };
 
     return (
-        <div className={`p-6 space-y-4`} {...props}>
+        <div className="p-6 space-y-4" style={isRevealedOnHomepage ? { padding: 0 } : {}}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
-                <h2 className="text-2xl font-bold text-white mb-1">{t("candidateList")}</h2>
+                <h2 className={`text-2xl font-bold ${isRevealedOnHomepage ? "text-gray-800 dark:text-white" : "text-white"} mb-1`}>{t("candidateList")}</h2>
             </motion.div>
 
             <SearchInputWithFilter searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterRef={filterRef} filterOpen={filterOpen} setFilterOpen={setFilterOpen} clearFilters={clearFilters}>

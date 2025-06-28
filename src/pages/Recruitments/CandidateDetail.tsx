@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import swal from "@/utils/swal";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Lightbox from "@/components/Common/Lightbox";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -17,6 +17,9 @@ interface CandidateDetailProps {
 }
 
 export const CandidateDetail: React.FC<CandidateDetailProps> = ({ candidate, yoe, onClose }) => {
+    const location = useLocation();
+    const isRevealedOnHomepage = location.pathname === "/" || location.pathname === "/dashboard";
+
     const { t } = useLanguage();
 
     const navigate = useNavigate();
@@ -51,7 +54,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({ candidate, yoe
             confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
             showCancelButton: true,
             reverseButtons: true,
-        }).then(async result => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     const { data } = await API.post(`recruitment/${endpoint}`, {
@@ -103,7 +106,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({ candidate, yoe
     };
 
     return (
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4" style={isRevealedOnHomepage ? { padding: 0 } : {}}>
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
                 <button onClick={onClose} className="text-white py-2 px-4 font-medium flex items-center justify-center space-x-2">
                     <ArrowLeft size={18} />
@@ -134,7 +137,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({ candidate, yoe
                             alt="Candidate Avatar"
                             className="w-20 h-20 rounded-full object-cover cursor-pointer hover:opacity-75 transition-opacity"
                             onClick={() => openLightbox(import.meta.env.VITE_PUBLIC_URL + "recruitment/foto/" + candidate.foto_selfie, candidate.nama_lengkap)}
-                            onError={e => {
+                            onError={(e) => {
                                 e.currentTarget.outerHTML = `<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">${candidate.nama_lengkap.charAt(0)}</div>`;
                             }}
                         />
