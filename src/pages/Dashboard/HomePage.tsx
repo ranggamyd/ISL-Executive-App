@@ -106,7 +106,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             {canAccess("salesInReports", "view") && <SalesInReports />}
-            {canAccess("candidates", "view") && <Candidates style={{ padding: 0 }} />}
+            {canAccess("candidates", "view") && <Candidates showTitle={false} style={{ padding: 0 }} />}
         </div>
     );
 };
