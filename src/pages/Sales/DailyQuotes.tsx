@@ -40,11 +40,11 @@ const DailyQuotes: React.FC = () => {
         })();
     }, [date]);
 
-    const uniqueSales = [...new Set(dailyQuotes.map(item => item.sales_name))];
-    const uniqueSupervisors = [...new Set(dailyQuotes.map(item => item.supervisor.nama_lengkap))];
-    const uniqueManagers = [...new Set(dailyQuotes.map(item => item.manager.nama_lengkap))];
+    const uniqueSales = [...new Set(dailyQuotes.map((item) => item.sales_name))];
+    const uniqueSupervisors = [...new Set(dailyQuotes.map((item) => item.supervisor.nama_lengkap))];
+    const uniqueManagers = [...new Set(dailyQuotes.map((item) => item.manager.nama_lengkap))];
 
-    const filteredQuotes = dailyQuotes.filter(item => {
+    const filteredQuotes = dailyQuotes.filter((item) => {
         return (!selectedSales || item.sales_name === selectedSales) && (!selectedSupervisor || item.supervisor.nama_lengkap === selectedSupervisor) && (!selectedManager || item.manager.nama_lengkap === selectedManager);
     });
 
@@ -108,7 +108,7 @@ const DailyQuotes: React.FC = () => {
     };
 
     const toggleItem = (index: number) => {
-        setOpenItems(prev => ({
+        setOpenItems((prev) => ({
             ...prev,
             [index]: !prev[index],
         }));
@@ -123,9 +123,9 @@ const DailyQuotes: React.FC = () => {
             <DateInputWithFilter date={date} setDate={setDate} filterRef={filterRef} filterOpen={filterOpen} setFilterOpen={setFilterOpen} clearFilters={clearFilters}>
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("sales")}</label>
-                    <select value={selectedSales} onChange={e => setSelectedSales(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select value={selectedSales} onChange={(e) => setSelectedSales(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">{t("allSales")}</option>
-                        {uniqueSales.map(sales => (
+                        {uniqueSales.map((sales) => (
                             <option key={sales} value={sales}>
                                 {sales}
                             </option>
@@ -134,9 +134,9 @@ const DailyQuotes: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("supervisor")}</label>
-                    <select value={selectedSupervisor} onChange={e => setSelectedSupervisor(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select value={selectedSupervisor} onChange={(e) => setSelectedSupervisor(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">{t("allSupervisors")}</option>
-                        {uniqueSupervisors.map(supervisor => (
+                        {uniqueSupervisors.map((supervisor) => (
                             <option key={supervisor} value={supervisor}>
                                 {supervisor}
                             </option>
@@ -145,9 +145,9 @@ const DailyQuotes: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("manager")}</label>
-                    <select value={selectedManager} onChange={e => setSelectedManager(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select value={selectedManager} onChange={(e) => setSelectedManager(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">{t("allManagers")}</option>
-                        {uniqueManagers.map(manager => (
+                        {uniqueManagers.map((manager) => (
                             <option key={manager} value={manager}>
                                 {manager}
                             </option>
@@ -156,7 +156,7 @@ const DailyQuotes: React.FC = () => {
                 </div>
             </DateInputWithFilter>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-1">
                 {loading
                     ? Array.from({ length: 6 }).map((_, index) => <StatSkeleton key={index} />)
                     : salesStats.map((stat, index) => {
@@ -175,8 +175,11 @@ const DailyQuotes: React.FC = () => {
                       })}
             </div>
 
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 text-center pt-6 pb-2">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-3 -mt-2">{t("salesList")}</h2>
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 text-center py-2 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-start">{t("salesList")}</h2>
+                <span className="text-gray-800 dark:text-white font-medium">
+                    {filteredQuotes.length} {filteredQuotes.length > 1 ? t("records") : t("record")}
+                </span>
             </motion.div>
 
             {loading ? (

@@ -49,7 +49,7 @@ const HomePage: React.FC = () => {
 
             setTimeout(() => {
                 setCharIndex(0);
-                setIndex(prev => (prev + 1) % texts.length);
+                setIndex((prev) => (prev + 1) % texts.length);
             }, 3000);
         }
 
@@ -106,7 +106,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             {canAccess("salesInReports", "view") && <SalesInReports />}
-            {canAccess("candidates", "view") && <Candidates />}
+            {canAccess("candidates", "view") && <Candidates style={{ padding: 0 }} />}
         </div>
     );
 };

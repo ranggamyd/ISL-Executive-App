@@ -15,7 +15,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Candidate as CandidateType } from "@/types/candidate";
 import SearchInputWithFilter from "@/components/Common/SearchInputWithFilter";
 
-const Candidates = () => {
+const Candidates = (props: React.HTMLAttributes<HTMLDivElement>) => {
     const { t } = useLanguage();
 
     const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ const Candidates = () => {
                 if (page === 1) setCandidates([]);
                 setHasMore(false);
             } else {
-                setCandidates(prev => (append ? [...prev, ...candidatesList] : candidatesList));
+                setCandidates((prev) => (append ? [...prev, ...candidatesList] : candidatesList));
                 setHasMore(data.data.next_page_url !== null);
             }
         } catch (err: any) {
@@ -136,7 +136,7 @@ const Candidates = () => {
                 confirmButtonColor: action === "approve" ? "#22C55E" : "#EF4444",
                 showCancelButton: true,
                 reverseButtons: true,
-            }).then(async result => {
+            }).then(async (result) => {
                 if (result.isConfirmed) {
                     setLoading(true);
                     try {
@@ -154,7 +154,7 @@ const Candidates = () => {
     };
 
     return (
-        <div className="p-6 space-y-4">
+        <div className={`p-6 space-y-4`} {...props}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
                 <h2 className="text-2xl font-bold text-white mb-1">{t("candidateList")}</h2>
             </motion.div>
@@ -162,9 +162,9 @@ const Candidates = () => {
             <SearchInputWithFilter searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterRef={filterRef} filterOpen={filterOpen} setFilterOpen={setFilterOpen} clearFilters={clearFilters}>
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-white">{t("position")}</label>
-                    <select value={selectedPosition} onChange={e => setSelectedPosition(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select value={selectedPosition} onChange={(e) => setSelectedPosition(e.target.value)} className="w-full px-3 py-2 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">{t("allPositions")}</option>
-                        {uniquePositions.map(position => (
+                        {uniquePositions.map((position) => (
                             <option key={position.id} value={position.id}>
                                 {position.nama_jabatan}
                             </option>
@@ -188,7 +188,7 @@ const Candidates = () => {
                                         alt="Avatar"
                                         className="w-12 h-12 rounded-full object-cover cursor-pointer hover:opacity-75 transition-opacity"
                                         onClick={() => openLightbox(import.meta.env.VITE_PUBLIC_URL + "recruitment/foto/" + candidate.foto_selfie, candidate.nama_lengkap)}
-                                        onError={e => {
+                                        onError={(e) => {
                                             e.currentTarget.outerHTML = `<div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold cursor-default">${candidate.nama_lengkap.charAt(0)}</div>`;
                                         }}
                                     />

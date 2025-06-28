@@ -73,7 +73,7 @@ export const MenuItemCard = ({ index, menu }: { index: number; menu: MenuType })
                 transition={{ duration: 0.4, delay: 0.5 + index * 0.05 }}
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.96 }}
-                className="group flex flex-col items-center justify-center gap-1 p-1 rounded-2xl shadow-sm"
+                className="group flex flex-col items-center justify-center gap-1 p-1 rounded-2xl shadow"
                 onClick={() => {
                     if (menu.id === "allMenus") {
                         setIsDrawerOpen(true);
@@ -112,7 +112,7 @@ export const MenuItemList = ({ index, menu }: { index: number; menu: MenuType })
             transition={{ duration: 0.4, delay: 0.5 + index * 0.05 }}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.96 }}
-            className="group flex flex-row items-center justify-start gap-4 p-1 rounded-2xl shadow-sm w-full"
+            className="group flex flex-row items-center justify-start gap-4 p-1 rounded-2xl shadow w-full"
             onClick={() => {
                 navigate(`/${menu.path}`);
             }}

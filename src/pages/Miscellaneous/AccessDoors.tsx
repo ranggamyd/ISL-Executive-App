@@ -163,11 +163,11 @@ const AccessDoors = () => {
             </SearchInputWithFilter>
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex space-x-2 mt-3">
-                <button onClick={() => handleDoorAction("open")} className="flex-1 bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button onClick={() => handleDoorAction("open")} className="flex-1 bg-gradient-to-br from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                     <DoorOpen size={18} />
                     <span className="text-xs">{t("openAllDoors")}</span>
                 </button>
-                <button onClick={() => handleDoorAction("normalize")} className="flex-1 bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button onClick={() => handleDoorAction("normalize")} className="flex-1 bg-gradient-to-br from-orange-500 to-orange-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
                     <LaptopMinimalCheck size={18} />
                     <span className="text-xs">{t("normalizeDoors")}</span>
                 </button>
