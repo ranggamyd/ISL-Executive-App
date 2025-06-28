@@ -4,16 +4,15 @@ import "leaflet/dist/leaflet.css";
 import { motion } from "framer-motion";
 import { Map as LeafletMap } from "leaflet";
 import RotatingMarker from "./RotatingMarker";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useEffect, useRef } from "react";
 import { getRelativeTime } from "@/utils/convertTime";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTheme } from "@/contexts/ThemeContext";
-import { Position as PositionType, Vehicle as VehicleType } from "@/types/gps";
-import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Filter, ChevronDown, Minimize2, Maximize2 } from "lucide-react";
 import SearchInput from "@/components/Common/SearchInput";
 import FilterButton from "@/components/Common/FilterButton";
-import LoadingSpinner from "@/components/Common/LoadingSpinner";
+import { Position as PositionType, Vehicle as VehicleType } from "@/types/gps";
+import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Minimize2, Maximize2 } from "lucide-react";
 
 const icons = {
     car: {
