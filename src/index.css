@@ -5,3 +5,41 @@
 .swal2-title {
     font-size: 1.25rem !important;
 }
+
+/* Default (light mode) */
+.leaflet-control-zoom {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+}
+
+.leaflet-control-zoom a {
+    color: #1f2937;
+    background-color: #ffffff;
+}
+
+.leaflet-control-zoom a:hover {
+    background-color: #f3f4f6;
+}
+
+/* Dark mode */
+body.dark .leaflet-control-zoom,
+html.dark .leaflet-control-zoom {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+}
+
+body.dark .leaflet-control-zoom a,
+html.dark .leaflet-control-zoom a {
+    color: #f9fafb;
+    background-color: #1f2937;
+}
+
+body.dark .leaflet-bar a,
+html.dark .leaflet-bar a {
+    border-bottom: 1px solid #374151 !important;
+}
+
+body.dark .leaflet-control-zoom a:hover,
+html.dark .leaflet-control-zoom a:hover {
+    background-color: #374151;
+}

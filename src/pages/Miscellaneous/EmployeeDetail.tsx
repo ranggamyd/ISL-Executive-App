@@ -455,7 +455,7 @@ export const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employee, onClos
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm text-gray-600 dark:text-gray-300">{t("certificates")}</p>
                                     {JSON.parse(employee.sertifikat)?.map((certificate: Certificate, index: number) => (
-                                        <p key={index} className="font-medium text-sm text-gray-900 mb-3">
+                                        <p key={index} className="font-medium text-sm text-gray-900 dark:text-white mb-3">
                                             {certificate.nama}
                                             <br />
                                             <small className="text-xs">
