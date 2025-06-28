@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { getRelativeTime } from "@/utils/convertTime";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Position as PositionType, Vehicle as VehicleType } from "@/types/gps";
 import { Pause, Play, Search, Wifi, CircleMinus, WifiOff, Filter, ChevronDown, Minimize2, Maximize2 } from "lucide-react";
 import SearchInput from "@/components/Common/SearchInput";
@@ -30,6 +31,7 @@ const icons = {
 
 const GpsView = () => {
     const { t } = useLanguage();
+    const { theme } = useTheme();
 
     const [vehicles, setVehicles] = useState<VehicleType[]>([]);
     const [positions, setPositions] = useState<{ [deviceId: number]: PositionType }>({});
@@ -50,6 +52,9 @@ const GpsView = () => {
     const http = window.location.protocol === "https:" ? "https:" : "http:";
     const path = http === "https:" ? "apps.intilab.com" : "10.88.8.40:8082";
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+    // Determine if we should use dark mode
+    const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -269,28 +274,49 @@ const GpsView = () => {
         setSearchTerm("");
     };
 
+    // Get appropriate tile layer based on theme
+    const getTileLayer = () => {
+        if (isDarkMode) {
+            // Dark mode: Use CartoDB Dark Matter tiles
+            return {
+                url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+                subdomains: ["a", "b", "c", "d"]
+            };
+        } else {
+            // Light mode: Use Google Maps
+            return {
+                url: "https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}",
+                attribution: "&copy; Google",
+                subdomains: ["mt0", "mt1", "mt2", "mt3"]
+            };
+        }
+    };
+
+    const tileLayer = getTileLayer();
+
     return (
         <div className="p-6 space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-gray-800/70 rounded-xl p-2 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
-                    <button onClick={() => setIsMapFullscreen(!isMapFullscreen)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors me-4">
-                        {isMapFullscreen ? <Minimize2 size={18} className="dark:text-white" /> : <Maximize2 size={18} className="dark:text-white" />}
+                    <button onClick={() => setIsMapFullscreen(!isMapFullscreen)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors me-4">
+                        {isMapFullscreen ? <Minimize2 size={18} className="text-gray-900 dark:text-white" /> : <Maximize2 size={18} className="text-gray-900 dark:text-white" />}
                     </button>
                 </div>
 
                 {/* Interactive Map */}
-                <div className={`transition-all duration-300 ${isMapFullscreen ? "fixed inset-0 z-[51] bg-white p-3" : ""}`}>
+                <div className={`transition-all duration-300 ${isMapFullscreen ? "fixed inset-0 z-[51] bg-white dark:bg-gray-900 p-3" : ""}`}>
                     {isMapFullscreen && (
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
-                            <button onClick={() => setIsMapFullscreen(false)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors me-4">
-                                <Minimize2 size={18} />
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-1 ms-4">{t("vehicleGPSTracking")}</h3>
+                            <button onClick={() => setIsMapFullscreen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors me-4">
+                                <Minimize2 size={18} className="text-gray-900 dark:text-white" />
                             </button>
                         </div>
                     )}
 
-                    <div className="flex flex-col bg-gray-50 rounded-2xl">
+                    <div className="flex flex-col bg-gray-50 dark:bg-gray-800 rounded-2xl">
                         {/* Map Container */}
                         <div className={`relative ${isMapFullscreen ? "h-[90dvh]" : "h-[400px]"}`}>
                             <div className="absolute inset-0 z-0 p-0">
@@ -308,7 +334,12 @@ const GpsView = () => {
                                         }
                                     }}
                                 >
-                                    <TileLayer url="https://{s}.google.com/vt/lyrs=m,traffic&x={x}&y={y}&z={z}" maxZoom={20} subdomains={["mt0", "mt1", "mt2", "mt3"]} attribution="&copy; Google" />
+                                    <TileLayer 
+                                        url={tileLayer.url}
+                                        maxZoom={20} 
+                                        subdomains={tileLayer.subdomains}
+                                        attribution={tileLayer.attribution}
+                                    />
                                     {vehicles.map((vehicle) => {
                                         const position = positions[vehicle.id];
                                         if (position) {
@@ -325,8 +356,8 @@ const GpsView = () => {
                             {/* Connection Status */}
                             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="absolute top-4 right-4">
                                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm ${isConnected ? "bg-green-500/20 border border-green-500/30" : "bg-red-500/20 border border-red-500/30"}`}>
-                                    {isConnected ? <Wifi className="w-4 h-4 text-green-600" /> : <WifiOff className="w-4 h-4 text-red-600" />}
-                                    <span className={`text-sm font-medium ${isConnected ? "text-green-700" : "text-red-700"}`}>{isConnected ? t("connected") : t("disconnected")}</span>
+                                    {isConnected ? <Wifi className="w-4 h-4 text-green-600 dark:text-green-400" /> : <WifiOff className="w-4 h-4 text-red-600 dark:text-red-400" />}
+                                    <span className={`text-sm font-medium ${isConnected ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"}`}>{isConnected ? t("connected") : t("disconnected")}</span>
                                 </div>
                             </motion.div>
                         </div>
@@ -369,7 +400,7 @@ const GpsView = () => {
                                         </select>
                                     </div>
                                     <div className="flex justify-end">
-                                        <button onClick={clearAllFilters} className="text-sm text-blue-600 hover:text-blue-800 hover:underline me-1">
+                                        <button onClick={clearAllFilters} className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline me-1">
                                             {t("clearAll")}
                                         </button>
                                     </div>
@@ -427,8 +458,8 @@ const GpsView = () => {
                                 {/* Speed and Details */}
                                 <div className="mt-auto">
                                     {position && (
-                                        <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-                                            <span className="font-medium truncate dark:text-gray-400">
+                                        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
+                                            <span className="font-medium truncate">
                                                 <span className="hidden sm:inline">{t("speed")}: </span>
                                                 {(Number(position.speed) * 1.609344).toFixed(0)} km/h
                                             </span>
@@ -436,7 +467,7 @@ const GpsView = () => {
                                     )}
 
                                     {/* Last Update */}
-                                    <div className="text-xs text-gray-400 border-t border-gray-100 pt-2 truncate">
+                                    <div className="text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700 pt-2 truncate">
                                         <span>{getRelativeTime(vehicle.lastUpdate) || "N/A"}</span>
                                     </div>
                                 </div>
@@ -447,8 +478,8 @@ const GpsView = () => {
             </div>
 
             {getFilteredVehicles.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                    <Search size={48} className="mx-auto mb-4 text-gray-300" />
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <Search size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                     <p>{t("noDataFound")}</p>
                 </div>
             )}

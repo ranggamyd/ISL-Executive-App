@@ -3,6 +3,7 @@ import { useMap } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { Vehicle as VehicleType } from "@/types/gps";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type RotatingMarkerProps = {
     position: LatLngExpression;
@@ -25,6 +26,7 @@ L.Icon.Default.mergeOptions({
 
 const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rotationAngle, iconUrl, popupInfo, onClick, isOpen }) => {
     const map = useMap();
+    const { theme } = useTheme();
 
     const markerRef = useRef<L.Marker | null>(null);
     const markerLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -32,6 +34,9 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
 
     const [initialZoomDone, setInitialZoomDone] = useState(false);
     const [lastPosition, setLastPosition] = useState<LatLngExpression>(position);
+
+    // Determine if we should use dark mode
+    const isDarkMode = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
     useEffect(() => {
         // Create custom icon
@@ -177,9 +182,9 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
                 }
 
                 .vehicle-label {
-                    background: rgba(255, 255, 255, 0.95);
+                    background: ${isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
                     backdrop-filter: blur(10px);
-                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    border: 1px solid ${isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(0, 0, 0, 0.1)'};
                     border-radius: 12px;
                     padding: 2px 8px;
                     margin-bottom: 4px;
@@ -192,7 +197,7 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
                 .vehicle-name {
                     font-size: 10px;
                     font-weight: 600;
-                    color: #374151;
+                    color: ${isDarkMode ? '#f9fafb' : '#374151'};
                     white-space: nowrap;
                 }
 
@@ -208,8 +213,8 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
                     height: 32px !important;
                     border-radius: 50%;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                    border: 2px solid white;
-                    background: white;
+                    border: 2px solid ${isDarkMode ? '#374151' : 'white'};
+                    background: ${isDarkMode ? '#374151' : 'white'};
                     padding: 2px;
                     transition: transform 0.3s ease;
                 }
@@ -240,10 +245,11 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
                 }
 
                 .modern-popup-container .leaflet-popup-content-wrapper {
-                    background: white;
+                    background: ${isDarkMode ? '#1f2937' : 'white'};
+                    color: ${isDarkMode ? '#f9fafb' : '#111827'};
                     border-radius: 12px;
                     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    border: 1px solid ${isDarkMode ? '#374151' : 'rgba(0, 0, 0, 0.1)'};
                     overflow: hidden;
                     padding: 0;
                 }
@@ -254,8 +260,14 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
                 }
 
                 .modern-popup-container .leaflet-popup-tip {
-                    background: white;
-                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    background: ${isDarkMode ? '#1f2937' : 'white'};
+                    border: 1px solid ${isDarkMode ? '#374151' : 'rgba(0, 0, 0, 0.1)'};
+                }
+
+                .modern-popup-container .leaflet-popup-close-button {
+                    color: ${isDarkMode ? '#f9fafb' : '#111827'} !important;
+                    font-size: 18px !important;
+                    padding: 4px 8px !important;
                 }
 
                 .modern-popup {
@@ -289,16 +301,159 @@ const RotatingMarker: React.FC<RotatingMarkerProps> = ({ position, vehicle, rota
                     padding: 12px 16px;
                     font-size: 12px;
                     line-height: 1.5;
-                    color: #374151;
+                    color: ${isDarkMode ? '#d1d5db' : '#374151'};
                 }
 
                 .popup-content strong {
-                    color: #111827;
+                    color: ${isDarkMode ? '#f9fafb' : '#111827'};
                 }
             `;
             mapContainer.appendChild(style);
+        } else {
+            // Update existing styles for theme changes
+            existingStyles.innerHTML = `
+                .custom-vehicle-marker {
+                    background: transparent !important;
+                    border: none !important;
+                }
+
+                .vehicle-marker-container {
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    pointer-events: auto;
+                }
+
+                .vehicle-label {
+                    background: ${isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
+                    backdrop-filter: blur(10px);
+                    border: 1px solid ${isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(0, 0, 0, 0.1)'};
+                    border-radius: 12px;
+                    padding: 2px 8px;
+                    margin-bottom: 4px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                    transform: translateX(-50%);
+                    left: 50%;
+                    position: relative;
+                }
+
+                .vehicle-name {
+                    font-size: 10px;
+                    font-weight: 600;
+                    color: ${isDarkMode ? '#f9fafb' : '#374151'};
+                    white-space: nowrap;
+                }
+
+                .vehicle-icon-wrapper {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .vehicle-icon {
+                    width: 32px !important;
+                    height: 32px !important;
+                    border-radius: 50%;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    border: 2px solid ${isDarkMode ? '#374151' : 'white'};
+                    background: ${isDarkMode ? '#374151' : 'white'};
+                    padding: 2px;
+                    transition: transform 0.3s ease;
+                }
+
+                .vehicle-icon:hover {
+                    transform: scale(1.1);
+                }
+
+                .vehicle-pulse {
+                    position: absolute;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: rgba(59, 130, 246, 0.3);
+                    animation: pulse 2s infinite;
+                    z-index: -1;
+                }
+
+                @keyframes pulse {
+                    0% {
+                        transform: scale(0.8);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: scale(2);
+                        opacity: 0;
+                    }
+                }
+
+                .modern-popup-container .leaflet-popup-content-wrapper {
+                    background: ${isDarkMode ? '#1f2937' : 'white'};
+                    color: ${isDarkMode ? '#f9fafb' : '#111827'};
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+                    border: 1px solid ${isDarkMode ? '#374151' : 'rgba(0, 0, 0, 0.1)'};
+                    overflow: hidden;
+                    padding: 0;
+                }
+
+                .modern-popup-container .leaflet-popup-content {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .modern-popup-container .leaflet-popup-tip {
+                    background: ${isDarkMode ? '#1f2937' : 'white'};
+                    border: 1px solid ${isDarkMode ? '#374151' : 'rgba(0, 0, 0, 0.1)'};
+                }
+
+                .modern-popup-container .leaflet-popup-close-button {
+                    color: ${isDarkMode ? '#f9fafb' : '#111827'} !important;
+                    font-size: 18px !important;
+                    padding: 4px 8px !important;
+                }
+
+                .modern-popup {
+                    min-width: 200px;
+                }
+
+                .popup-header {
+                    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                    color: white;
+                    padding: 12px 16px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .popup-title {
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin: 0;
+                }
+
+                .popup-category {
+                    font-size: 11px;
+                    background: rgba(255, 255, 255, 0.2);
+                    padding: 2px 6px;
+                    border-radius: 8px;
+                    text-transform: capitalize;
+                }
+
+                .popup-content {
+                    padding: 12px 16px;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    color: ${isDarkMode ? '#d1d5db' : '#374151'};
+                }
+
+                .popup-content strong {
+                    color: ${isDarkMode ? '#f9fafb' : '#111827'};
+                }
+            `;
         }
-    }, [map]);
+    }, [map, isDarkMode]);
 
     return null;
 };
