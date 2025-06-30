@@ -61,7 +61,7 @@ const Header: React.FC = () => {
 
     return (
         <header className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled ? "bg-white/50 dark:bg-gray-900/50 shadow-md backdrop-blur-lg" : "bg-transparent border-none"}`}>
-            <div className="flex items-center justify-between px-6 py-3">
+            <div className="flex items-center justify-between px-6 py-3 pt-10">
                 <div className="flex items-center space-x-4">
                     <img src={theme === "dark" || isScrolled == false ? "img/dark-logo.png" : "img/light-logo.png"} alt="Logo" className="h-8 -mt-2" />
                 </div>
