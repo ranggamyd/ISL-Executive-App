@@ -23,7 +23,6 @@ dependencies:
   
   # HTTP & API
   dio: ^5.3.3
-  dio_certificate_pinning: ^6.0.0
   
   # Authentication & Security
   flutter_secure_storage: ^9.0.0
@@ -51,7 +50,6 @@ dependencies:
   
   # Notifications & Alerts
   fluttertoast: ^8.2.4
-  awesome_dialog: ^3.1.0
   
   # WebSocket
   web_socket_channel: ^2.4.0
