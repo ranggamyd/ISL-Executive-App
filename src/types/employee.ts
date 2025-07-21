@@ -30,6 +30,33 @@ export interface Employee {
     grade: string;
     kategori_grade: string;
     status_pekerjaan: string;
+    salary?: {
+        gaji_pokok?: number;
+        tunjangan_kerja?: number;
+    };
+    bpjs_kesehatan?: {
+        nominal_potongan_karyawan?: number;
+    };
+    bpjs_tk?: {
+        nominal_potongan_karyawan?: number;
+    };
+    pph21?: {
+        pajak_bulanan?: number;
+    };
+    loan?: Array<{
+        total_kasbon: number;
+        tenor: number;
+        nominal_potongan: number;
+        bulan_mulai_pemotongan: string;
+        status: string;
+    }>;
+    denda?: Array<{
+        total_denda: number;
+        tenor: number;
+        nominal_potongan: number;
+        bulan_mulai_pemotongan: string;
+        status: string;
+    }>;
 
     pendidikan?: string; // JSON string yang bisa di-parse ke Education[]
     pengalaman_kerja?: string; // JSON string yang bisa di-parse ke Experience[]

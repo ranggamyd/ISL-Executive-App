@@ -19,7 +19,6 @@ const AppRouter: React.FC = () => {
     const { user, menus, loading } = useAuth();
 
     const { canAccess } = useUserAccess();
-
     if (loading) return <LoadingScreen />;
 
     const routeConfigs: {
@@ -29,20 +28,20 @@ const AppRouter: React.FC = () => {
         protected: boolean;
         permissionName?: string; // optional, cuma dipake kalo protected
     }[] = [
-        ...[...new Set((menus ?? []).map(m => m.group))].map((group, index) => ({
-            key: index,
-            path: `/${group}`,
-            component: lazyImport(`/${group}`),
-            protected: false,
-        })),
-        ...(menus ?? []).map((menu, index) => ({
-            key: index,
-            path: menu.path,
-            component: lazyImport(menu.path),
-            protected: true,
-            permissionName: menu.name,
-        })),
-    ];
+            ...[...new Set((menus ?? []).map(m => m.group))].map((group, index) => ({
+                key: index,
+                path: `/${group}`,
+                component: lazyImport(`/${group}`),
+                protected: false,
+            })),
+            ...(menus ?? []).map((menu, index) => ({
+                key: index,
+                path: menu.path,
+                component: lazyImport(menu.path),
+                protected: true,
+                permissionName: menu.name,
+            })),
+        ];
 
     return (
         <Router basename="/exec/" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
