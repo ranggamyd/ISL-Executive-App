@@ -180,124 +180,126 @@ export const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employee, onClos
                 </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t("salaryInformation")}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {employee.salary?.gaji_pokok ? (<div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 dark:text-blue-400">Rp +</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("basicSalary")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{employee.salary?.gaji_pokok ? employee.salary.gaji_pokok.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
-                        </div>
-                    </div>) : null}
-                    {employee.salary?.tunjangan_kerja ? (
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                <span className="text-blue-600 dark:text-blue-400">Rp +</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("allowance")}</p>
-                                <small className="font-medium text-gray-900 dark:text-white">{employee.salary.tunjangan_kerja.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
-                            </div>
-                        </div>
-                    ) : null}
-                    {employee.salary?.gaji_pokok ? (<div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-yellow-600 dark:text-yellow-400">Rp +</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("totalSalary")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{(employee.salary?.gaji_pokok + (employee.salary?.tunjangan_kerja || 0)).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
-                        </div>
-                    </div>) : null}
-                </div>
-
-                {employee.salary?.gaji_pokok && <hr className="my-4 border-gray-200 dark:border-gray-700" />}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {employee.bpjs_kesehatan?.nominal_potongan_karyawan && <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-red-600 dark:text-red-400">Rp -</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("insurance")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{employee.bpjs_kesehatan?.nominal_potongan_karyawan ? employee.bpjs_kesehatan.nominal_potongan_karyawan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
-                        </div>
-                    </div>}
-                    {employee.bpjs_tk?.nominal_potongan_karyawan ? (<div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-red-600 dark:text-red-400">Rp -</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("insuranceWork")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{employee.bpjs_tk?.nominal_potongan_karyawan ? employee.bpjs_tk.nominal_potongan_karyawan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
-                        </div>
-                    </div>) : null}
-                    {employee.pph21?.pajak_bulanan ? (<div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-red-600 dark:text-red-400">Rp -</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("pph21")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{employee.pph21?.pajak_bulanan ? employee.pph21.pajak_bulanan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
-                        </div>
-                    </div>) : null}
-                    {employee.bpjs_kesehatan?.nominal_potongan_karyawan || employee.bpjs_tk?.nominal_potongan_karyawan ? (<div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-red-600 dark:text-red-400">Rp -</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("totalDeduction")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{((employee.bpjs_kesehatan?.nominal_potongan_karyawan || 0) + (employee.bpjs_tk?.nominal_potongan_karyawan || 0) + (employee.pph21?.pajak_bulanan || 0)).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
-                        </div>
-                    </div>) : null}
-                </div>
-                {employee.bpjs_tk?.nominal_potongan_karyawan && <hr className="my-4 border-gray-200 dark:border-gray-700" />}
-                {employee.salary?.gaji_pokok && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 dark:text-blue-400">Rp</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("takeHomePay")}</p>
-                            <small className="font-medium text-gray-900 dark:text-white">{(((employee.salary?.gaji_pokok || 0) + (employee.salary?.tunjangan_kerja || 0)) - ((employee.bpjs_kesehatan?.nominal_potongan_karyawan || 0) + (employee.bpjs_tk?.nominal_potongan_karyawan || 0) + (employee.pph21?.pajak_bulanan || 0))).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
-                        </div>
-                    </div>
-                </div>}
-                <hr className="my-4 border-gray-200 dark:border-gray-700" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {
-                        (employee.loan ?? []).map((loan) => (
-                            <div className="flex items-center space-x-3">
+            {employee.salary?.gaji_pokok ? (
+                <>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t("salaryInformation")}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {employee.salary?.gaji_pokok ? (<div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                    <span className="text-blue-600 dark:text-blue-400">Rp-</span>
+                                    <span className="text-blue-600 dark:text-blue-400">Rp +</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("kasbon")}</p>
-                                    <small className="font-medium text-gray-900 dark:text-white">{loan.total_kasbon.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} = {loan.tenor} x {loan.nominal_potongan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">Start: {loan.bulan_mulai_pemotongan}, Status: {loan.status}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("basicSalary")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{employee.salary?.gaji_pokok ? employee.salary.gaji_pokok.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
                                 </div>
-                            </div>
-                        ))
-                    }
-
-                    {
-                        (employee.denda ?? []).map((denda) => (
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                    <span className="text-blue-600 dark:text-blue-400">Rp-</span>
+                            </div>) : null}
+                            {employee.salary?.tunjangan_kerja ? (
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                        <span className="text-blue-600 dark:text-blue-400">Rp +</span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("allowance")}</p>
+                                        <small className="font-medium text-gray-900 dark:text-white">{employee.salary.tunjangan_kerja.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
+                                    </div>
+                                </div>
+                            ) : null}
+                            {employee.salary?.gaji_pokok ? (<div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <span className="text-yellow-600 dark:text-yellow-400">Rp +</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("sanksi")}</p>
-                                    <small className="font-medium text-gray-900 dark:text-white">{denda.total_denda.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} = {denda.tenor} x {denda.nominal_potongan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">Start: {denda.bulan_mulai_pemotongan}, Status: {denda.status}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("totalSalary")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{(employee.salary?.gaji_pokok + (employee.salary?.tunjangan_kerja || 0)).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
+                                </div>
+                            </div>) : null}
+                        </div>
+
+                        {employee.salary?.gaji_pokok && <hr className="my-4 border-gray-200 dark:border-gray-700" />}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {employee.bpjs_kesehatan?.nominal_potongan_karyawan && <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                    <span className="text-red-600 dark:text-red-400">Rp -</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("insurance")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{employee.bpjs_kesehatan?.nominal_potongan_karyawan ? employee.bpjs_kesehatan.nominal_potongan_karyawan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
+                                </div>
+                            </div>}
+                            {employee.bpjs_tk?.nominal_potongan_karyawan ? (<div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                    <span className="text-red-600 dark:text-red-400">Rp -</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("insuranceWork")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{employee.bpjs_tk?.nominal_potongan_karyawan ? employee.bpjs_tk.nominal_potongan_karyawan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
+                                </div>
+                            </div>) : null}
+                            {employee.pph21?.pajak_bulanan ? (<div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                    <span className="text-red-600 dark:text-red-400">Rp -</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("pph21")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{employee.pph21?.pajak_bulanan ? employee.pph21.pajak_bulanan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) : '-'}</small>
+                                </div>
+                            </div>) : null}
+                            {employee.bpjs_kesehatan?.nominal_potongan_karyawan || employee.bpjs_tk?.nominal_potongan_karyawan ? (<div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                    <span className="text-red-600 dark:text-red-400">Rp -</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("totalDeduction")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{((employee.bpjs_kesehatan?.nominal_potongan_karyawan || 0) + (employee.bpjs_tk?.nominal_potongan_karyawan || 0) + (employee.pph21?.pajak_bulanan || 0)).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
+                                </div>
+                            </div>) : null}
+                        </div>
+                        {employee.bpjs_tk?.nominal_potongan_karyawan && <hr className="my-4 border-gray-200 dark:border-gray-700" />}
+                        {employee.salary?.gaji_pokok && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                    <span className="text-blue-600 dark:text-blue-400">Rp</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("takeHomePay")}</p>
+                                    <small className="font-medium text-gray-900 dark:text-white">{(((employee.salary?.gaji_pokok || 0) + (employee.salary?.tunjangan_kerja || 0)) - ((employee.bpjs_kesehatan?.nominal_potongan_karyawan || 0) + (employee.bpjs_tk?.nominal_potongan_karyawan || 0) + (employee.pph21?.pajak_bulanan || 0))).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
                                 </div>
                             </div>
-                        ))
-                    }
-                    {/* <div className="flex items-center space-x-3">
+                        </div>}
+                        <hr className="my-4 border-gray-200 dark:border-gray-700" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {
+                                (employee.loan ?? []).map((loan) => (
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                            <span className="text-blue-600 dark:text-blue-400">Rp-</span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("kasbon")}</p>
+                                            <small className="font-medium text-gray-900 dark:text-white">{loan.total_kasbon.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} = {loan.tenor} x {loan.nominal_potongan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">Start: {loan.bulan_mulai_pemotongan}, Status: {loan.status}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+
+                            {
+                                (employee.denda ?? []).map((denda) => (
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                            <span className="text-blue-600 dark:text-blue-400">Rp-</span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 -mb-1">{t("sanksi")}</p>
+                                            <small className="font-medium text-gray-900 dark:text-white">{denda.total_denda.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} = {denda.tenor} x {denda.nominal_potongan.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</small>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">Start: {denda.bulan_mulai_pemotongan}, Status: {denda.status}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                            {/* <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                             <span className="text-blue-600 dark:text-blue-400">Rp-</span>
                         </div>
@@ -306,8 +308,10 @@ export const EmployeeDetail: React.FC<EmployeeDetailProps> = ({ employee, onClos
                             <small className="font-medium text-gray-900 dark:text-white">{employee.email}</small>
                         </div>
                     </div> */}
-                </div>
-            </motion.div>
+                        </div>
+                    </motion.div>
+                </>
+            ) : null}
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t("personalInformation")}</h3>
